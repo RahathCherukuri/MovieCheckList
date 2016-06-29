@@ -14,6 +14,9 @@
 		32F70E411D12B7E1002DF8BA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 32F70E3F1D12B7E1002DF8BA /* LaunchScreen.storyboard */; };
 		32F70E4C1D12B7E1002DF8BA /* MovieCheckListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32F70E4B1D12B7E1002DF8BA /* MovieCheckListTests.swift */; };
 		32F70E571D12B7E1002DF8BA /* MovieCheckListUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32F70E561D12B7E1002DF8BA /* MovieCheckListUITests.swift */; };
+		32F70E691D233F41002DF8BA /* MVClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32F70E681D233F41002DF8BA /* MVClient.swift */; };
+		32F70E6B1D233F87002DF8BA /* MVConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32F70E6A1D233F87002DF8BA /* MVConstants.swift */; };
+		32F70E6D1D233F97002DF8BA /* MVConvenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32F70E6C1D233F97002DF8BA /* MVConvenience.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +50,9 @@
 		32F70E521D12B7E1002DF8BA /* MovieCheckListUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MovieCheckListUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		32F70E561D12B7E1002DF8BA /* MovieCheckListUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCheckListUITests.swift; sourceTree = "<group>"; };
 		32F70E581D12B7E1002DF8BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		32F70E681D233F41002DF8BA /* MVClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MVClient.swift; sourceTree = "<group>"; };
+		32F70E6A1D233F87002DF8BA /* MVConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MVConstants.swift; sourceTree = "<group>"; };
+		32F70E6C1D233F97002DF8BA /* MVConvenience.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MVConvenience.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +103,7 @@
 		32F70E351D12B7E1002DF8BA /* MovieCheckList */ = {
 			isa = PBXGroup;
 			children = (
+				32F70E671D233F04002DF8BA /* API */,
 				32F70E361D12B7E1002DF8BA /* AppDelegate.swift */,
 				32F70E381D12B7E1002DF8BA /* ViewController.swift */,
 				32F70E3A1D12B7E1002DF8BA /* Main.storyboard */,
@@ -123,6 +130,16 @@
 				32F70E581D12B7E1002DF8BA /* Info.plist */,
 			);
 			path = MovieCheckListUITests;
+			sourceTree = "<group>";
+		};
+		32F70E671D233F04002DF8BA /* API */ = {
+			isa = PBXGroup;
+			children = (
+				32F70E681D233F41002DF8BA /* MVClient.swift */,
+				32F70E6A1D233F87002DF8BA /* MVConstants.swift */,
+				32F70E6C1D233F97002DF8BA /* MVConvenience.swift */,
+			);
+			path = API;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -256,8 +273,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32F70E6B1D233F87002DF8BA /* MVConstants.swift in Sources */,
 				32F70E391D12B7E1002DF8BA /* ViewController.swift in Sources */,
+				32F70E691D233F41002DF8BA /* MVClient.swift in Sources */,
 				32F70E371D12B7E1002DF8BA /* AppDelegate.swift in Sources */,
+				32F70E6D1D233F97002DF8BA /* MVConvenience.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -484,6 +504,7 @@
 				32F70E5D1D12B7E1002DF8BA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		32F70E5E1D12B7E1002DF8BA /* Build configuration list for PBXNativeTarget "MovieCheckListTests" */ = {
 			isa = XCConfigurationList;
@@ -492,6 +513,7 @@
 				32F70E601D12B7E1002DF8BA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		32F70E611D12B7E1002DF8BA /* Build configuration list for PBXNativeTarget "MovieCheckListUITests" */ = {
 			isa = XCConfigurationList;
@@ -500,6 +522,7 @@
 				32F70E631D12B7E1002DF8BA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
