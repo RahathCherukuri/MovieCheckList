@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="MovieCheckList" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -20,6 +21,39 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+        </scene>
+        <!--Auth View Controller-->
+        <scene sceneID="XvN-L7-XQa">
+            <objects>
+                <viewController restorationIdentifier="MVAuthViewController" storyboardIdentifier="MVAuthViewController" id="cZV-fd-jNJ" customClass="MVAuthViewController" customModule="MovieCheckList" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="6gg-FS-6yT"/>
+                        <viewControllerLayoutGuide type="bottom" id="Y9z-Hk-S69"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="47a-TK-4Ge">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K4B-6w-Bko">
+                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="K4B-6w-Bko" firstAttribute="top" secondItem="6gg-FS-6yT" secondAttribute="bottom" id="8uF-Ic-I2q"/>
+                            <constraint firstItem="Y9z-Hk-S69" firstAttribute="top" secondItem="K4B-6w-Bko" secondAttribute="bottom" id="Nfg-4m-fuu"/>
+                            <constraint firstItem="K4B-6w-Bko" firstAttribute="leading" secondItem="47a-TK-4Ge" secondAttribute="leading" id="WGG-Uc-Y9l"/>
+                            <constraint firstAttribute="trailing" secondItem="K4B-6w-Bko" secondAttribute="trailing" id="bPr-37-2jT"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="webView" destination="K4B-6w-Bko" id="Ltv-Rk-F8P"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rew-eW-W6Y" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="9" y="1025"/>
         </scene>
     </scenes>
 </document>

@@ -28,7 +28,7 @@ final class MVClient: NSObject {
     }
     
     // MARK: GET
-    func taskForGETMethod(method: String, parameters: [String : AnyObject], completionHandler: (result: AnyObject!, error: NSError?) -> Void) -> NSURLSessionDataTask {
+    func taskForGETMethod(method: String, parameters: [String : AnyObject], completionHandler: Result<AnyObject, Error> -> Void) -> NSURLSessionDataTask {
         
         /* 1. Set the parameters */
         var mutableParameters = parameters
@@ -45,6 +45,7 @@ final class MVClient: NSObject {
             /* GUARD: Was there an error? */
             guard (error == nil) else {
                 print("There was an error with your request: \(error)")
+                completionHandler(.Failure(.Network(error!.localizedDescription)))
                 return
             }
             
@@ -63,6 +64,7 @@ final class MVClient: NSObject {
             /* GUARD: Was there any data returned? */
             guard let data = data else {
                 print("No data was returned by the request!")
+                completionHandler(.Failure(.Parser(.BadData)))
                 return
             }
             
@@ -91,17 +93,16 @@ extension MVClient {
     }
     
     /* Helper: Given raw JSON, return a usable Foundation object */
-    class func parseJSONWithCompletionHandler(data: NSData, completionHandler: (result: AnyObject!, error: NSError?) -> Void) {
+    class func parseJSONWithCompletionHandler(data: NSData, completionHandler: Result<AnyObject, Error> -> Void) {
         
         var parsedResult: AnyObject!
         do {
             parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
         } catch {
-            let userInfo = [NSLocalizedDescriptionKey : "Could not parse the data as JSON: '\(data)'"]
-            completionHandler(result: nil, error: NSError(domain: "parseJSONWithCompletionHandler", code: 1, userInfo: userInfo))
+             completionHandler(.Failure(.Parser(.BadData)))
         }
         
-        completionHandler(result: parsedResult, error: nil)
+        completionHandler(.Success(parsedResult))
     }
     
     /* Helper function: Given a dictionary of parameters, convert to a string for a url */
