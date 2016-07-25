@@ -14,16 +14,25 @@ class WatchedListViewController: UIViewController {
     
     var watchedMoviesList: [Movie] = [Movie]()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        MVClient.sharedInstance.getFavoriteMovies() {(success, errorString, movies) in
-            if success {
-                self.watchedMoviesList = movies!
-                self.watchedListTableView.reloadData()
-            } else {
-                self.displayError(errorString)
+    override func viewWillAppear(animated: Bool) {
+        let movies = MVClient.sharedInstance.getWatchedMoviesList()
+        if (movies.count > 0) {
+            watchedMoviesList = movies
+            self.watchedListTableView.reloadData()
+        } else {
+            MVClient.sharedInstance.getFavoriteMovies() {(success, errorString, movies) in
+                if success {
+                    self.watchedMoviesList = movies!
+                    self.watchedListTableView.reloadData()
+                } else {
+                    self.displayError(errorString)
+                }
             }
         }
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
     }
     
     func displayError(errorString: String?) {
@@ -108,7 +117,5 @@ extension WatchedListViewController: UITableViewDelegate, UITableViewDataSource 
         default:
             break
         }
-    }
-    
-    
+    }  
 }
