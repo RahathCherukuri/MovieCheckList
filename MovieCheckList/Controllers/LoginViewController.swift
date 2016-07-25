@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,11 +18,22 @@ class ViewController: UIViewController {
             print("success: ", success)
             print("errorString: ", errorString)
             if success {
-//                self.completeLogin()
+                self.completeLogin()
             } else {
-//                self.displayError(errorString)
+                self.displayError(errorString)
             }
         }
+    }
+    
+    func completeLogin() {
+        dispatch_async(dispatch_get_main_queue(), {
+            let controller = self.storyboard!.instantiateViewControllerWithIdentifier("ManagerNavigationController") as! UINavigationController
+            self.presentViewController(controller, animated: true, completion: nil)
+        })
+    }
+    
+    func displayError(errorString: String?) {
+        print("errorString: \(errorString)")
     }
 }
 

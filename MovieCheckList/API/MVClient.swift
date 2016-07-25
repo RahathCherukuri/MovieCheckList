@@ -17,8 +17,13 @@ final class MVClient: NSObject {
     var session: NSURLSession
     
     /* Authentication state */
-    var sessionID : String? = nil
-    var userID : Int? = nil
+//    var sessionID : String? = nil
+//    var userID : Int? = nil
+    
+    var sessionID: String? = "4ef795cbe240c4d61a8e4e24c8e33128d001639b"
+    var userID: Int? = 6325437
+    
+    var allMovies: [Movie] = []
     
     // MARK: Initializers
     
@@ -26,6 +31,56 @@ final class MVClient: NSObject {
         session = NSURLSession.sharedSession()
         super.init()
     }
+    
+    // MARK: GET Image
+    
+    func taskForGETImage(size: String, filePath: String, completionHandler: (imageData: NSData?, error: NSError?) ->  Void) -> NSURLSessionTask {
+        
+        /* 1. Set the parameters */
+        // There are none...
+        
+        /* 2/3. Build the URL and configure the request */
+        let baseURL = NSURL(string: MVClient.Constants.baseImageURLString)!
+        let url = baseURL.URLByAppendingPathComponent(size).URLByAppendingPathComponent(filePath)
+        let request = NSURLRequest(URL: url)
+        
+        /* 4. Make the request */
+        let task = session.dataTaskWithRequest(request) { (data, response, error) in
+            
+            /* GUARD: Was there an error? */
+            guard (error == nil) else {
+                print("There was an error with your request: \(error)")
+                return
+            }
+            
+            /* GUARD: Did we get a successful 2XX response? */
+            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
+                if let response = response as? NSHTTPURLResponse {
+                    print("Your request returned an invalid response! Status code: \(response.statusCode)!")
+                } else if let response = response {
+                    print("Your request returned an invalid response! Response: \(response)!")
+                } else {
+                    print("Your request returned an invalid response!")
+                }
+                return
+            }
+            
+            /* GUARD: Was there any data returned? */
+            guard let data = data else {
+                print("No data was returned by the request!")
+                return
+            }
+            
+            /* 5/6. Parse the data and use the data (happens in completion handler) */
+            completionHandler(imageData: data, error: nil)
+        }
+        
+        /* 7. Start the request */
+        task.resume()
+        
+        return task
+    }
+
     
     // MARK: GET
     func taskForGETMethod(method: String, parameters: [String : AnyObject], completionHandler: Result<AnyObject, Error> -> Void) -> NSURLSessionDataTask {
@@ -77,8 +132,68 @@ final class MVClient: NSObject {
         
         return task
     }
+    
+    // MARK: POST
+//    completionHandler: Result<AnyObject, Error> -> Void
+    
+    func taskForPOSTMethod(method: String, parameters: [String : AnyObject], jsonBody: [String:AnyObject], completionHandler: Result<AnyObject, Error> -> Void) -> NSURLSessionDataTask {
+        
+        /* 1. Set the parameters */
+        var mutableParameters = parameters
+        mutableParameters[ParameterKeys.ApiKey] = Constants.ApiKey
+        
+        /* 2/3. Build the URL and configure the request */
+        let urlString = Constants.BaseURLSecure + method + MVClient.escapedParameters(mutableParameters)
+        let url = NSURL(string: urlString)!
+        let request = NSMutableURLRequest(URL: url)
+        request.HTTPMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        do {
+            request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(jsonBody, options: .PrettyPrinted)
+        }
+        
+        /* 4. Make the request */
+        let task = session.dataTaskWithRequest(request) { (data, response, error) in
+            
+            /* GUARD: Was there an error? */
+            guard (error == nil) else {
+                completionHandler(.Failure(.Network(error!.localizedDescription)))
+                print("There was an error with your request: \(error)")
+                return
+            }
+            
+            /* GUARD: Did we get a successful 2XX response? */
+            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
+                if let response = response as? NSHTTPURLResponse {
+                    print("Your request returned an invalid response! Status code: \(response.statusCode)!")
+                } else if let response = response {
+                    print("Your request returned an invalid response! Response: \(response)!")
+                } else {
+                    print("Your request returned an invalid response!")
+                }
+                return
+            }
+            
+            /* GUARD: Was there any data returned? */
+            guard let data = data else {
+                print("No data was returned by the request!")
+                return
+            }
+            
+            /* 5/6. Parse the data and use the data (happens in completion handler) */
+            MVClient.parseJSONWithCompletionHandler(data, completionHandler: completionHandler)
+        }
+        
+        /* 7. Start the request */
+        task.resume()
+        
+        return task
+    }
 
 }
+
+
 
 // MARK: Helper Methods
 

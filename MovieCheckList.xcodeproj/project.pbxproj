@@ -8,8 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		320AB8DE1D3193A200142419 /* MVAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320AB8DD1D3193A200142419 /* MVAuthViewController.swift */; };
+		320AB8E11D3491BA00142419 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320AB8E01D3491BA00142419 /* LoginViewController.swift */; };
+		320AB8E81D3492FF00142419 /* Movie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320AB8E71D3492FF00142419 /* Movie.swift */; };
+		320AB8EA1D34940700142419 /* WatchListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320AB8E91D34940700142419 /* WatchListViewController.swift */; };
+		320AB8EC1D3AD9E100142419 /* MoviePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320AB8EB1D3AD9E100142419 /* MoviePickerViewController.swift */; };
+		320AB8F81D4401A300142419 /* WatchListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320AB8F71D4401A300142419 /* WatchListTableViewCell.swift */; };
+		320AB8FA1D44F5FE00142419 /* WatchedListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320AB8F91D44F5FE00142419 /* WatchedListViewController.swift */; };
+		320AB8FC1D44FDB800142419 /* WatchedListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320AB8FB1D44FDB800142419 /* WatchedListTableViewCell.swift */; };
 		32F70E371D12B7E1002DF8BA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32F70E361D12B7E1002DF8BA /* AppDelegate.swift */; };
-		32F70E391D12B7E1002DF8BA /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32F70E381D12B7E1002DF8BA /* ViewController.swift */; };
 		32F70E3C1D12B7E1002DF8BA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 32F70E3A1D12B7E1002DF8BA /* Main.storyboard */; };
 		32F70E3E1D12B7E1002DF8BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32F70E3D1D12B7E1002DF8BA /* Assets.xcassets */; };
 		32F70E411D12B7E1002DF8BA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 32F70E3F1D12B7E1002DF8BA /* LaunchScreen.storyboard */; };
@@ -41,9 +47,15 @@
 
 /* Begin PBXFileReference section */
 		320AB8DD1D3193A200142419 /* MVAuthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MVAuthViewController.swift; sourceTree = "<group>"; };
+		320AB8E01D3491BA00142419 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		320AB8E71D3492FF00142419 /* Movie.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Movie.swift; sourceTree = "<group>"; };
+		320AB8E91D34940700142419 /* WatchListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WatchListViewController.swift; sourceTree = "<group>"; };
+		320AB8EB1D3AD9E100142419 /* MoviePickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoviePickerViewController.swift; sourceTree = "<group>"; };
+		320AB8F71D4401A300142419 /* WatchListTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WatchListTableViewCell.swift; sourceTree = "<group>"; };
+		320AB8F91D44F5FE00142419 /* WatchedListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WatchedListViewController.swift; sourceTree = "<group>"; };
+		320AB8FB1D44FDB800142419 /* WatchedListTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WatchedListTableViewCell.swift; sourceTree = "<group>"; };
 		32F70E331D12B7E1002DF8BA /* MovieCheckList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MovieCheckList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32F70E361D12B7E1002DF8BA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		32F70E381D12B7E1002DF8BA /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		32F70E3B1D12B7E1002DF8BA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		32F70E3D1D12B7E1002DF8BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		32F70E401D12B7E1002DF8BA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -86,6 +98,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		320AB8DF1D34914900142419 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				320AB8E91D34940700142419 /* WatchListViewController.swift */,
+				320AB8F91D44F5FE00142419 /* WatchedListViewController.swift */,
+				320AB8EB1D3AD9E100142419 /* MoviePickerViewController.swift */,
+				320AB8E01D3491BA00142419 /* LoginViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		320AB8E61D3492FF00142419 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				320AB8E71D3492FF00142419 /* Movie.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		320AB8F61D44017F00142419 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				320AB8F71D4401A300142419 /* WatchListTableViewCell.swift */,
+				320AB8FB1D44FDB800142419 /* WatchedListTableViewCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		32F70E2A1D12B7E1002DF8BA = {
 			isa = PBXGroup;
 			children = (
@@ -109,12 +149,14 @@
 		32F70E351D12B7E1002DF8BA /* MovieCheckList */ = {
 			isa = PBXGroup;
 			children = (
-				32F70E671D233F04002DF8BA /* API */,
 				32F70E361D12B7E1002DF8BA /* AppDelegate.swift */,
-				32F70E381D12B7E1002DF8BA /* ViewController.swift */,
+				32F70E671D233F04002DF8BA /* API */,
+				320AB8E61D3492FF00142419 /* Model */,
 				32F70E781D3140BD002DF8BA /* Error */,
 				32F70E701D313CBA002DF8BA /* Result */,
 				32F70E3A1D12B7E1002DF8BA /* Main.storyboard */,
+				320AB8F61D44017F00142419 /* Views */,
+				320AB8DF1D34914900142419 /* Controllers */,
 				32F70E3D1D12B7E1002DF8BA /* Assets.xcassets */,
 				32F70E3F1D12B7E1002DF8BA /* LaunchScreen.storyboard */,
 				32F70E421D12B7E1002DF8BA /* Info.plist */,
@@ -299,12 +341,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				32F70E6B1D233F87002DF8BA /* MVConstants.swift in Sources */,
+				320AB8EC1D3AD9E100142419 /* MoviePickerViewController.swift in Sources */,
 				320AB8DE1D3193A200142419 /* MVAuthViewController.swift in Sources */,
-				32F70E391D12B7E1002DF8BA /* ViewController.swift in Sources */,
 				32F70E691D233F41002DF8BA /* MVClient.swift in Sources */,
 				32F70E721D313CBA002DF8BA /* Result.swift in Sources */,
+				320AB8E81D3492FF00142419 /* Movie.swift in Sources */,
 				32F70E371D12B7E1002DF8BA /* AppDelegate.swift in Sources */,
 				32F70E7A1D3140BD002DF8BA /* Error.swift in Sources */,
+				320AB8FC1D44FDB800142419 /* WatchedListTableViewCell.swift in Sources */,
+				320AB8E11D3491BA00142419 /* LoginViewController.swift in Sources */,
+				320AB8FA1D44F5FE00142419 /* WatchedListViewController.swift in Sources */,
+				320AB8F81D4401A300142419 /* WatchListTableViewCell.swift in Sources */,
+				320AB8EA1D34940700142419 /* WatchListViewController.swift in Sources */,
 				32F70E6D1D233F97002DF8BA /* MVConvenience.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -21,6 +21,10 @@ extension MVClient {
         static let BaseURLSecure : String = "https://api.themoviedb.org/3/"
         static let AuthorizationURL : String = "https://www.themoviedb.org/authenticate/"
         
+        // MARK: ImageURL's
+        static let baseImageURLString: String = "http://image.tmdb.org/t/p/"
+        static let secureBaseImageURLString: String = "https://image.tmdb.org/t/p/"
+        
     }
     
     // MARK: Methods
@@ -39,6 +43,10 @@ extension MVClient {
         
         // MARK: Search
         static let SearchMovie = "search/movie"
+        
+        // MARK: Movie
+        static let MovieInfo = "movie/{id}"
+        static let MovieCredits = "movie/{id}/credits"
         
     }
     
@@ -93,10 +101,16 @@ extension MVClient {
         // MARK: Movies
         static let MovieID = "id"
         static let MovieTitle = "title"
+        static let MovieWatched = "watched"
         static let MoviePosterPath = "poster_path"
         static let MovieReleaseDate = "release_date"
-        static let MovieReleaseYear = "release_year"
         static let MovieResults = "results"
-        
+        static let MovieGenres = "genres"
+        static let MovieGenreName = "name"
+        static let MovieOriginalLanguage = "original_language"
+        static let MovieOverview = "overview"
+        static let MovieTagline = "tagline"
+        static let MovieRating = "vote_average"
+        static let MovieRunTime = "runtime"
     }
 }
