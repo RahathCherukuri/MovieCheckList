@@ -379,24 +379,6 @@ extension MVClient {
     }
 
     
-//    /* 2. Make the request */
-//    taskForPOSTMethod(mutableMethod, parameters: parameters, jsonBody: jsonBody) { JSONResult, error in
-//    
-//    /* 3. Send the desired value(s) to completion handler */
-//    if let error = error {
-//    completionHandler(result: nil, error: error)
-//    } else {
-//    if let results = JSONResult[MVClient.JSONResponseKeys.StatusCode] as? Int {
-//    completionHandler(result: results, error: nil)
-//    } else {
-//    completionHandler(result: nil, error: NSError(domain: "postToWatchList parsing", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not parse postToWatchList"]))
-//    }
-//    }
-//    }
-
-
-
-    
     // MARK: Helper Functions
     
 //    func convertResultObject(result: Result<AnyObject, Error>) -> (success: Bool, errorString: String) {
