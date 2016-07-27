@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct genre {
     var name: String? = nil
@@ -60,6 +61,11 @@ struct Movie {
         tagline = dictionary["tagline"] as? String
         rating = dictionary[MVClient.JSONResponseKeys.MovieRating] as? Float
         runTime = dictionary["runtime"] as? Float
+    }
+    
+    var image: UIImage? {
+        get { return MVClient.Caches.imageCache.imageWithIdentifier(String(id)) }
+        set { MVClient.Caches.imageCache.storeImage(newValue, withIdentifier: String(id)) }
     }
 
 //  Helper Functions
