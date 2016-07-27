@@ -79,7 +79,7 @@ extension WatchedListViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         /* Get cell type */
         let cellReuseIdentifier = "WatchedlistCell"
-        let movie = watchedMoviesList[indexPath.row]
+        var movie = watchedMoviesList[indexPath.row]
         let cell = tableView.dequeueReusableCellWithIdentifier(cellReuseIdentifier) as! WatchedListTableViewCell!
         
         /* Set cell defaults */
@@ -93,17 +93,23 @@ extension WatchedListViewController: UITableViewDelegate, UITableViewDataSource 
         cell.moviePoster.contentMode = UIViewContentMode.ScaleAspectFit
         var posterSizes = ["w92", "w154", "w185", "w342", "w500", "w780", "original"]
         
-        
-        if let posterPath = movie.posterPath {
-            MVClient.sharedInstance.taskForGETImage(posterSizes[2], filePath: posterPath, completionHandler: { (imageData, error) in
-                if let image = UIImage(data: imageData!) {
-                    dispatch_async(dispatch_get_main_queue()) {
-                        cell.moviePoster!.image = image
+        if let localImage = movie.image {
+            cell.moviePoster.image = localImage
+        } else if movie.posterPath == nil || movie.posterPath == "" {
+            cell.moviePoster.image = UIImage(named: "noImage")
+        } else {
+            if let posterPath = movie.posterPath {
+                MVClient.sharedInstance.taskForGETImage(posterSizes[2], filePath: posterPath, completionHandler: { (imageData, error) in
+                    if let image = UIImage(data: imageData!) {
+                        movie.image = image
+                        dispatch_async(dispatch_get_main_queue()) {
+                            cell.moviePoster!.image = image
+                        }
+                    } else {
+                        print(error)
                     }
-                } else {
-                    print(error)
-                }
-            })
+                })
+            }
         }
         return cell
     }

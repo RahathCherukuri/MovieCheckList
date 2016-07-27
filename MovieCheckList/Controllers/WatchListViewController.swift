@@ -140,7 +140,6 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
         }
         print("allMovies in delete : ", MVClient.sharedInstance.allMovies)
     }
-    
 }
 
 extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
@@ -156,7 +155,7 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
         
         /* Get cell type */
         let cellReuseIdentifier = "WatchlistCell"
-        let movie = watchMoviesList[indexPath.row]
+        var movie = watchMoviesList[indexPath.row]
         let cell = tableView.dequeueReusableCellWithIdentifier(cellReuseIdentifier) as! WatchListTableViewCell!
         
         /* Set cell defaults */
@@ -170,17 +169,23 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
         cell.moviePoster.contentMode = UIViewContentMode.ScaleAspectFit
         var posterSizes = ["w92", "w154", "w185", "w342", "w500", "w780", "original"]
         
-        
-        if let posterPath = movie.posterPath {
-            MVClient.sharedInstance.taskForGETImage(posterSizes[2], filePath: posterPath, completionHandler: { (imageData, error) in
-                if let image = UIImage(data: imageData!) {
-                    dispatch_async(dispatch_get_main_queue()) {
-                        cell.moviePoster!.image = image
+        if let localImage = movie.image {
+            cell.moviePoster.image = localImage
+        } else if movie.posterPath == nil || movie.posterPath == "" {
+            cell.moviePoster.image = UIImage(named: "noImage")
+        } else {
+            if let posterPath = movie.posterPath {
+                MVClient.sharedInstance.taskForGETImage(posterSizes[2], filePath: posterPath, completionHandler: { (imageData, error) in
+                    if let image = UIImage(data: imageData!) {
+                        movie.image = image
+                        dispatch_async(dispatch_get_main_queue()) {
+                            cell.moviePoster!.image = image
+                        }
+                    } else {
+                        print(error)
                     }
-                } else {
-                    print(error)
-                }
-            })
+                })
+            }
         }
         
         return cell
