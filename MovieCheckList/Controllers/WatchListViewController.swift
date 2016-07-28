@@ -19,13 +19,13 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     
     override func viewWillAppear(animated: Bool) {
         let movies = MVClient.sharedInstance.getToWatchMoviesList()
-        if (movies.count > 0) {
+        if (!movies.isEmpty) {
             watchMoviesList = movies
         } else {
             MVClient.sharedInstance.getWatchlistMovies() {(success, errorString, movies) in
                 if success {
                     self.watchMoviesList = movies!
-                    print("allMovies in viewDidLoad getWatchlistMovies: ", MVClient.sharedInstance.allMovies)
+//                    print("allMovies in viewDidLoad getWatchlistMovies: ", MVClient.sharedInstance.allMovies)
                     dispatch_async(dispatch_get_main_queue()) {
                         self.watchListTableView.reloadData()
                     }
