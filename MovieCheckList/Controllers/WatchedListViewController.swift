@@ -16,14 +16,17 @@ class WatchedListViewController: UIViewController {
     
     override func viewWillAppear(animated: Bool) {
         let movies = MVClient.sharedInstance.getWatchedMoviesList()
-        if (movies.count > 0) {
+        if (!movies.isEmpty) {
+            print("array")
             watchedMoviesList = movies
             self.watchedListTableView.reloadData()
         } else {
             MVClient.sharedInstance.getFavoriteMovies() {(success, errorString, movies) in
                 if success {
                     self.watchedMoviesList = movies!
-                    self.watchedListTableView.reloadData()
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.watchedListTableView.reloadData()
+                    }
                 } else {
                     self.displayError(errorString)
                 }

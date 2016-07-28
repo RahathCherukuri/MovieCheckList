@@ -34,19 +34,29 @@ class MoviePickerViewController: UIViewController {
         movieSearchBar.delegate = self
         
         /* Configure tap recognizer */
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(MoviePickerViewController.handleSingleTap(_:)))
-        tapRecognizer.numberOfTapsRequired = 1
-        tapRecognizer.delegate = self
-        view.addGestureRecognizer(tapRecognizer)
+//        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(MoviePickerViewController.handleSingleTap(_:)))
+//        tapRecognizer.numberOfTapsRequired = 1
+//        tapRecognizer.delegate = self
+//        view.addGestureRecognizer(tapRecognizer)
+        loadWatchedListMovies()
+    }
+    
+    func loadWatchedListMovies() {
+        let watchedMovies = MVClient.sharedInstance.getWatchedMoviesList()
+        if watchedMovies.isEmpty {
+            MVClient.sharedInstance.getFavoriteMovies() {(success, errorString, movies) in
+            }            
+        }
     }
     
     // MARK: Dismissals
     
-    func handleSingleTap(recognizer: UITapGestureRecognizer) {
-        view.endEditing(true)
-    }
+//    func handleSingleTap(recognizer: UITapGestureRecognizer) {
+//        view.endEditing(true)
+//    }
+//    
     
-    func cancel() {
+    @IBAction func cancel(sender: UIBarButtonItem) {
         delegate?.moviePicker(self, didPickMovie: nil)
         dismissViewControllerAnimated(true, completion: nil)
     }
@@ -122,8 +132,10 @@ extension MoviePickerViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
         let movie = movies[indexPath.row]
+        var movieAlreadySaved: Bool = false
         _ = MVClient.sharedInstance.allMovies.map({
             if ($0.id == movie.id) {
+                movieAlreadySaved = true
                 if ($0.watched == false) {
                     print("Movie already in watchList")
                 } else {
@@ -133,22 +145,24 @@ extension MoviePickerViewController: UITableViewDelegate, UITableViewDataSource 
             }
         })
         
-        MVClient.sharedInstance.postToWatchlist(movie, watchlist: true) { status_code, error in
-            if let err = error {
-                print(err)
-            } else {
-                if status_code == 1 || status_code == 12 {
-                    print("Success status code \(status_code)")
-                    dispatch_async(dispatch_get_main_queue()) {
-                        self.delegate?.moviePicker(self, didPickMovie: movie)
-                        self.dismissViewControllerAnimated(true, completion: nil)
-                    }
+        if (!movieAlreadySaved) {
+            MVClient.sharedInstance.postToWatchlist(movie, watchlist: true) { status_code, error in
+                if let err = error {
+                    print(err)
                 } else {
-                    print("Unexpected status code \(status_code)")
+                    if status_code == 1 || status_code == 12 {
+                        print("Success status code \(status_code)")
+                        dispatch_async(dispatch_get_main_queue()) {
+                            self.delegate?.moviePicker(self, didPickMovie: movie)
+                            self.dismissViewControllerAnimated(true, completion: nil)
+                        }
+                    } else {
+                        print("Unexpected status code \(status_code)")
+                    }
                 }
             }
         }
-//        let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MovieDetailViewController") as! MovieDetailViewController
+        //        let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MovieDetailViewController") as! MovieDetailViewController
 //        controller.movie = movie
 //        self.navigationController!.pushViewController(controller, animated: true)
     }
