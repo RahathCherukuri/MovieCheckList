@@ -38,15 +38,6 @@ class MoviePickerViewController: UIViewController {
 //        tapRecognizer.numberOfTapsRequired = 1
 //        tapRecognizer.delegate = self
 //        view.addGestureRecognizer(tapRecognizer)
-        loadWatchedListMovies()
-    }
-    
-    func loadWatchedListMovies() {
-        let watchedMovies = MVClient.sharedInstance.getWatchedMoviesList()
-        if watchedMovies.isEmpty {
-            MVClient.sharedInstance.getFavoriteMovies() {(success, errorString, movies) in
-            }            
-        }
     }
     
     // MARK: Dismissals
@@ -151,7 +142,7 @@ extension MoviePickerViewController: UITableViewDelegate, UITableViewDataSource 
                     print(err)
                 } else {
                     if status_code == 1 || status_code == 12 {
-                        print("Success status code \(status_code)")
+//                        print("Success status code \(status_code)")
                         dispatch_async(dispatch_get_main_queue()) {
                             self.delegate?.moviePicker(self, didPickMovie: movie)
                             self.dismissViewControllerAnimated(true, completion: nil)

@@ -130,7 +130,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="100" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="9MJ-6p-mg1">
-                                <rect key="frame" x="0.0" y="64" width="600" height="487"/>
+                                <rect key="frame" x="0.0" y="64" width="600" height="492"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="WatchlistCell" rowHeight="100" id="0Ct-sC-9ph" customClass="WatchListTableViewCell" customModule="MovieCheckList" customModuleProvider="target">
@@ -141,42 +141,50 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="uIU-pA-bjJ">
-                                                    <rect key="frame" x="5" y="5" width="100" height="89.5"/>
+                                                    <rect key="frame" x="2" y="5" width="100" height="89.5"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="100" id="esR-qi-MkL"/>
                                                     </constraints>
                                                 </imageView>
                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="c0Q-gm-alw">
-                                                    <rect key="frame" x="110" y="5" width="485" height="90"/>
+                                                    <rect key="frame" x="104" y="5" width="456" height="90"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dmV-3f-g4i">
-                                                            <rect key="frame" x="0.0" y="0.0" width="485" height="21"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="456" height="21"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0h3-bz-Oe2">
-                                                            <rect key="frame" x="0.0" y="35" width="485" height="21"/>
+                                                            <rect key="frame" x="0.0" y="35" width="456" height="21"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ezB-32-dg5">
-                                                            <rect key="frame" x="0.0" y="70" width="485" height="21"/>
+                                                            <rect key="frame" x="0.0" y="70" width="456" height="21"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                     </subviews>
                                                 </stackView>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KVK-fG-ANg">
+                                                    <rect key="frame" x="560" y="0.0" width="40" height="99.5"/>
+                                                    <state key="normal" title="Button" image="CheckMark"/>
+                                                </button>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstAttribute="bottom" secondItem="c0Q-gm-alw" secondAttribute="bottom" constant="5" id="3D3-w7-70u"/>
                                                 <constraint firstItem="uIU-pA-bjJ" firstAttribute="top" secondItem="8Ur-96-Tj3" secondAttribute="top" constant="5" id="6pN-9Q-vfY"/>
-                                                <constraint firstAttribute="trailing" secondItem="c0Q-gm-alw" secondAttribute="trailing" constant="5" id="CcX-kq-xSJ"/>
-                                                <constraint firstItem="uIU-pA-bjJ" firstAttribute="leading" secondItem="8Ur-96-Tj3" secondAttribute="leading" constant="5" id="adX-a3-uYX"/>
+                                                <constraint firstItem="KVK-fG-ANg" firstAttribute="top" secondItem="8Ur-96-Tj3" secondAttribute="top" id="8N3-ad-GZI"/>
+                                                <constraint firstAttribute="trailing" secondItem="c0Q-gm-alw" secondAttribute="trailing" constant="40" id="CcX-kq-xSJ"/>
+                                                <constraint firstItem="KVK-fG-ANg" firstAttribute="leading" secondItem="c0Q-gm-alw" secondAttribute="trailing" id="L7F-5X-fJW"/>
+                                                <constraint firstItem="uIU-pA-bjJ" firstAttribute="leading" secondItem="8Ur-96-Tj3" secondAttribute="leading" constant="2" id="adX-a3-uYX"/>
+                                                <constraint firstAttribute="trailing" secondItem="KVK-fG-ANg" secondAttribute="trailing" id="ett-RC-nPi"/>
                                                 <constraint firstItem="c0Q-gm-alw" firstAttribute="top" secondItem="8Ur-96-Tj3" secondAttribute="top" constant="5" id="gAh-VL-2bX"/>
-                                                <constraint firstItem="c0Q-gm-alw" firstAttribute="leading" secondItem="uIU-pA-bjJ" secondAttribute="trailing" constant="5" id="yoe-GE-3xQ"/>
+                                                <constraint firstAttribute="bottom" secondItem="KVK-fG-ANg" secondAttribute="bottom" id="iTy-5T-owV"/>
+                                                <constraint firstItem="c0Q-gm-alw" firstAttribute="leading" secondItem="uIU-pA-bjJ" secondAttribute="trailing" constant="2" id="yoe-GE-3xQ"/>
                                                 <constraint firstAttribute="bottom" secondItem="uIU-pA-bjJ" secondAttribute="bottom" constant="5" id="ypO-ld-GjX"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -185,6 +193,7 @@
                                             <outlet property="moviePoster" destination="uIU-pA-bjJ" id="ldF-Af-giX"/>
                                             <outlet property="movieTime" destination="0h3-bz-Oe2" id="u9L-kd-pOa"/>
                                             <outlet property="movieTitle" destination="dmV-3f-g4i" id="Bni-l0-eZv"/>
+                                            <outlet property="movieWatched" destination="KVK-fG-ANg" id="RUS-uq-lSm"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -203,6 +212,8 @@
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="WatchList" id="eOP-1h-otW"/>
+                    <toolbarItems/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="watchListTableView" destination="9MJ-6p-mg1" id="rri-D3-PQe"/>
                     </connections>
@@ -359,4 +370,7 @@
             <point key="canvasLocation" x="101" y="1092"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="CheckMark" width="35" height="35"/>
+    </resources>
 </document>

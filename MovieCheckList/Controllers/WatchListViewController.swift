@@ -40,6 +40,15 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpUI()
+        loadWatchedListMovies()
+    }
+    
+    func loadWatchedListMovies() {
+        let watchedMovies = MVClient.sharedInstance.getWatchedMoviesList()
+        if watchedMovies.isEmpty {
+            MVClient.sharedInstance.getFavoriteMovies() {(success, errorString, movies) in
+            }
+        }
     }
     
     func setUpUI() {
@@ -48,6 +57,12 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     
     func displayError(errorString: String?) {
         print("errorString: \(errorString)")
+    }
+    
+    func watchedMovie(sender: UIButton) {
+        let movie = watchMoviesList[sender.tag]
+        let indexPath: NSIndexPath = NSIndexPath(forRow: sender.tag, inSection: 0)
+        deleteWatchedListMovies(movie, indexPath: indexPath, deleteFromAllMovies: false)
     }
     
     // MARK: - Actions
@@ -73,7 +88,7 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
                     let movie = Movie(dictionary: movieDictionary)
                     self.watchMoviesList.append(movie)
                     MVClient.sharedInstance.allMovies.append(movie)
-                    print("allMovies in after adding movie: ", MVClient.sharedInstance.allMovies)
+//                    print("allMovies in after adding movie: ", MVClient.sharedInstance.allMovies)
                     dispatch_async(dispatch_get_main_queue()) {
                         self.watchListTableView.reloadData()
                     }
@@ -138,7 +153,7 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
             }
             MVClient.sharedInstance.allMovies[index].watched = true
         }
-        print("allMovies in delete : ", MVClient.sharedInstance.allMovies)
+//        print("allMovies in delete : ", MVClient.sharedInstance.allMovies)
     }
 }
 
@@ -162,6 +177,10 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
         if ((movie.releaseYear) != nil) {
             cell.movieTitle.text = "\(movie.title) (\(movie.releaseYear!))"
         }
+        
+        cell.movieWatched.tag = indexPath.row
+        cell.movieWatched.addTarget(self, action: #selector(WatchListViewController.watchedMovie(_:)), forControlEvents: .TouchUpInside)
+        
         cell.movieTime.text = "Time: " + movie.getHoursAndMinutes(movie.runTime!)
         cell.movieGenre.text = movie.getCommaSeperatedGenres(movie.genres)
         
@@ -201,10 +220,10 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
         }
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let movie = watchMoviesList[indexPath.row]
-        print("Movie: ", movie)
-        deleteWatchedListMovies(movie, indexPath: indexPath, deleteFromAllMovies: false)
-    }
+//    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+//        let movie = watchMoviesList[indexPath.row]
+//        print("Movie: ", movie)
+//        deleteWatchedListMovies(movie, indexPath: indexPath, deleteFromAllMovies: false)
+//    }
     
 }
