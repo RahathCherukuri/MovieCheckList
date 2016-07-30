@@ -25,10 +25,10 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
             MVClient.sharedInstance.getWatchlistMovies() {(success, errorString, movies) in
                 if success {
                     self.watchMoviesList = movies!
-//                    print("allMovies in viewDidLoad getWatchlistMovies: ", MVClient.sharedInstance.allMovies)
                     dispatch_async(dispatch_get_main_queue()) {
                         self.watchListTableView.reloadData()
                     }
+                    self.loadWatchedListMovies()
                 } else {
                     self.displayError(errorString)
                 }
@@ -40,7 +40,6 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpUI()
-        loadWatchedListMovies()
     }
     
     func loadWatchedListMovies() {
@@ -182,7 +181,7 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
         cell.movieWatched.addTarget(self, action: #selector(WatchListViewController.watchedMovie(_:)), forControlEvents: .TouchUpInside)
         
         cell.movieTime.text = "Time: " + movie.getHoursAndMinutes(movie.runTime!)
-        cell.movieGenre.text = movie.getCommaSeperatedGenres(movie.genres)
+        cell.movieGenre.text = movie.genres
         
         cell.moviePoster.image = UIImage(named: "Film")
         cell.moviePoster.contentMode = UIViewContentMode.ScaleAspectFit

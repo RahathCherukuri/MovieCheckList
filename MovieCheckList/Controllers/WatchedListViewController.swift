@@ -90,7 +90,7 @@ extension WatchedListViewController: UITableViewDelegate, UITableViewDataSource 
             cell.movieTitle.text = "\(movie.title) (\(movie.releaseYear!))"
         }
         cell.movieTime.text = "Time: " + movie.getHoursAndMinutes(movie.runTime!)
-        cell.movieGenre.text = movie.getCommaSeperatedGenres(movie.genres)
+        cell.movieGenre.text = movie.genres
         
         cell.moviePoster.image = UIImage(named: "Film")
         cell.moviePoster.contentMode = UIViewContentMode.ScaleAspectFit

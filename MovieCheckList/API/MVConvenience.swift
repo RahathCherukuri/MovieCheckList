@@ -129,7 +129,6 @@ extension MVClient {
         }
     }
     
-    
     //Get the watchlist, iterate through the list and get each movie information
     func getWatchlistMovies(completionHandler: (success: Bool, errorString: String?, movies: [Movie]?) -> Void) {
         
@@ -137,23 +136,24 @@ extension MVClient {
         let parameters = [MVClient.ParameterKeys.SessionID: MVClient.sharedInstance.sessionID!]
         var mutableMethod : String = Methods.AccountIDWatchlistMovies
         mutableMethod = MVClient.substituteKeyInMethod(mutableMethod, key: MVClient.URLKeys.UserID, value: String(MVClient.sharedInstance.userID!))!
-
+        
         taskForGETMethod(mutableMethod, parameters: parameters) {dataResult in
             switch dataResult {
             case .Success(let result):
                 guard let dic: [String: AnyObject] = result as? [String: AnyObject],
-                watchMovieResults = dic[MVClient.JSONResponseKeys.MovieResults] as? [[String: AnyObject]]
-                else {
+                    watchMovieResults = dic[MVClient.JSONResponseKeys.MovieResults] as? [[String: AnyObject]]
+                    else {
                         let errorString = self.getErrorString(Error.Parser(.BadData))
-                    completionHandler(success: false, errorString: errorString, movies: nil)
+                        completionHandler(success: false, errorString: errorString, movies: nil)
                         return
                 }
                 
-                let countBeforeAppending: Int = MVClient.sharedInstance.allMovies.count
+                let myGroup = dispatch_group_create()
                 _ = watchMovieResults.map({
                     guard let id = $0[MVClient.JSONResponseKeys.UserID] as? Int else {
                         return
                     }
+                    dispatch_group_enter(myGroup)
                     self.getMovieInfo(id) {dataResult in
                         switch dataResult {
                         case .Success(let mov):
@@ -161,16 +161,16 @@ extension MVClient {
                             movieDictionary[MVClient.JSONResponseKeys.MovieWatched] = false
                             let movie = Movie(dictionary: movieDictionary)
                             MVClient.sharedInstance.allMovies.append(movie)
-                            let countAfterAppending = MVClient.sharedInstance.allMovies.count
-                            if ((countAfterAppending - countBeforeAppending) == watchMovieResults.count) {
-                                let watchListMovies:[Movie] = self.getToWatchMoviesList()
-                                completionHandler(success: true, errorString: nil, movies: watchListMovies)
-                            }
+                            dispatch_group_leave(myGroup)
                         case .Failure(let error):
                             let errorString = self.getErrorString(error)
                             completionHandler(success: false, errorString: errorString, movies: nil)
                         }
                     }
+                })
+                dispatch_group_notify(myGroup, dispatch_get_main_queue(), {
+                    let watchListMovies:[Movie] = self.getToWatchMoviesList()
+                    completionHandler(success: true, errorString: nil, movies: watchListMovies)
                 })
             case .Failure(let error):
                 let errorString = self.getErrorString(error)
@@ -178,6 +178,7 @@ extension MVClient {
             }
         }
     }
+
     
     //Get the FavouriteList, iterate through the list and get each movie information
     func getFavoriteMovies(completionHandler: (success: Bool, errorString: String?, movies: [Movie]?) -> Void) {
@@ -198,12 +199,13 @@ extension MVClient {
                         completionHandler(success: false, errorString: errorString, movies: nil)
                         return
                 }
-                let countBeforeAppending: Int = MVClient.sharedInstance.allMovies.count
-                
+                let myGroup = dispatch_group_create()
                 _ = watchMovieResults.map({
                     guard let id = $0[MVClient.JSONResponseKeys.UserID] as? Int else {
                         return
                     }
+                    dispatch_group_enter(myGroup)
+
                     self.getMovieInfo(id) {dataResult in
                         switch dataResult {
                         case .Success(let mov):
@@ -211,16 +213,16 @@ extension MVClient {
                             movieDictionary[MVClient.JSONResponseKeys.MovieWatched] = true
                             let movie = Movie(dictionary: movieDictionary)
                             MVClient.sharedInstance.allMovies.append(movie)
-                            let countAfterAppending = MVClient.sharedInstance.allMovies.count
-                            if ((countAfterAppending - countBeforeAppending) == watchMovieResults.count) {
-                                let watchedMovies:[Movie] = self.getWatchedMoviesList()
-                                completionHandler(success: true, errorString: nil, movies: watchedMovies)
-                            }
+                            dispatch_group_leave(myGroup)
                         case .Failure(let error):
                             let errorString = self.getErrorString(error)
                             completionHandler(success: false, errorString: errorString, movies: nil)
                         }
                     }
+                })
+                dispatch_group_notify(myGroup, dispatch_get_main_queue(), {
+                    let watchListMovies:[Movie] = self.getWatchedMoviesList()
+                    completionHandler(success: true, errorString: nil, movies: watchListMovies)
                 })
             case .Failure(let error):
                 let errorString = self.getErrorString(error)
