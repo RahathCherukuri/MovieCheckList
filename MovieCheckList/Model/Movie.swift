@@ -9,10 +9,6 @@
 import Foundation
 import UIKit
 
-struct genre {
-    var name: String? = nil
-}
-
 struct Movie {
     
     // MARK: Properties
@@ -27,7 +23,7 @@ struct Movie {
     var tagline: String? = nil
     var rating: Float? = nil
     var runTime: Float? = nil
-    var genres: [genre] = []
+    var genres: String? = nil
 
     
     // MARK: Initializers
@@ -48,12 +44,14 @@ struct Movie {
                 releaseYear = ""
             }
         }
+        var genresArray: [String] = []
+        
         if let movieGenres = dictionary["genres"] as? NSArray{
             _ = movieGenres.map({
                 let name = $0["name"] as? String
-                let movieGenre: genre = genre(name: name)
-                genres.append(movieGenre)
+                genresArray.append(name!)
             })
+            genres = getCommaSeperatedGenres(genresArray)
         }
         
         originalLanguage = dictionary[MVClient.JSONResponseKeys.MovieOriginalLanguage] as? String
@@ -77,12 +75,8 @@ struct Movie {
         return hoursAndMinutes
     }
     
-    func getCommaSeperatedGenres(movieGenres: [genre])-> String {
-        var genresArray: [String] = []
-        _ = movieGenres.map({
-            genresArray.append($0.name!)
-        })
-        return genresArray.joinWithSeparator(",")
+    func getCommaSeperatedGenres(movieGenres: [String])-> String {
+        return movieGenres.joinWithSeparator(",")
     }
     
 }
