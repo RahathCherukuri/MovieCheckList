@@ -7,19 +7,20 @@
 //
 
 import UIKit
+import CoreData
 
 class WatchListViewController: UIViewController, MoviePickerViewControllerDelegate {
     
     @IBOutlet weak var watchListTableView: UITableView!
     
-    // Add Didset method so that when ever this is set it can invoke allMovies sharedObject
     var watchMoviesList: [Movie] = [Movie]()
     
     // MARK: - Life Cycle
     
     override func viewWillAppear(animated: Bool) {
-        let movies = MVClient.sharedInstance.getToWatchMoviesList()
+        let movies = MVClient.sharedInstance.fetchMovies(false)
         if (!movies.isEmpty) {
+            print("array in WatchListViewController")
             watchMoviesList = movies
         } else {
             MVClient.sharedInstance.getWatchlistMovies() {(success, errorString, movies) in
@@ -43,7 +44,7 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     }
     
     func loadWatchedListMovies() {
-        let watchedMovies = MVClient.sharedInstance.getWatchedMoviesList()
+        let watchedMovies = MVClient.sharedInstance.fetchMovies(true)
         if watchedMovies.isEmpty {
             MVClient.sharedInstance.getFavoriteMovies() {(success, errorString, movies) in
             }
@@ -61,7 +62,7 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     func watchedMovie(sender: UIButton) {
         let movie = watchMoviesList[sender.tag]
         let indexPath: NSIndexPath = NSIndexPath(forRow: sender.tag, inSection: 0)
-        deleteWatchedListMovies(movie, indexPath: indexPath, deleteFromAllMovies: false)
+        deleteWatchedListMovies(movie, indexPath: indexPath, addToWatchedListMovies: true)
     }
     
     // MARK: - Actions
@@ -79,15 +80,14 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     func moviePicker(moviePicker: MoviePickerViewController, didPickMovie movie: Movie?) {
         if let newMovie = movie {
             
-            MVClient.sharedInstance.getMovieInfo(newMovie.id) { dataResult in
+            MVClient.sharedInstance.getMovieInfo(Int(newMovie.id)) { dataResult in
                 switch dataResult {
                 case .Success(let mov):
                     var movieDictionary: [String: AnyObject] = mov as! [String : AnyObject]
                     movieDictionary[MVClient.JSONResponseKeys.MovieWatched] = false
-                    let movie = Movie(dictionary: movieDictionary)
+                    let movie = Movie(dictionary: movieDictionary, context: MVClient.sharedInstance.sharedContext)
+                    MVClient.sharedInstance.saveContext()
                     self.watchMoviesList.append(movie)
-                    MVClient.sharedInstance.allMovies.append(movie)
-//                    print("allMovies in after adding movie: ", MVClient.sharedInstance.allMovies)
                     dispatch_async(dispatch_get_main_queue()) {
                         self.watchListTableView.reloadData()
                     }
@@ -98,14 +98,14 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
         }
     }
     
-    func deleteWatchedListMovies(movie: Movie, indexPath: NSIndexPath, deleteFromAllMovies: Bool) {
+    func deleteWatchedListMovies(movie: Movie, indexPath: NSIndexPath, addToWatchedListMovies: Bool) {
         MVClient.sharedInstance.postToWatchlist(movie, watchlist: false) { status_code, error in
             if let err = error {
                 print(err)
             } else{
                 if status_code == 13 {
-                    if (deleteFromAllMovies == true) {
-                        self.delete(movie, deleteFromAllMovies: deleteFromAllMovies)
+                    if (addToWatchedListMovies == false) {
+                        self.delete(movie, addToWatchedListMovies: addToWatchedListMovies)
                         dispatch_async(dispatch_get_main_queue()) {
                             self.watchListTableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Fade)
                         }
@@ -115,7 +115,7 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
                                 print(err)
                             } else {
                                 if status_code == 1 || status_code == 12 {
-                                    self.delete(movie, deleteFromAllMovies: deleteFromAllMovies)
+                                    self.delete(movie, addToWatchedListMovies: addToWatchedListMovies)
                                     dispatch_async(dispatch_get_main_queue()) {
                                         self.watchListTableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Fade)
                                     }
@@ -133,28 +133,42 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
         }
     }
     
-    func delete(movie: Movie, deleteFromAllMovies: Bool) {
-        watchMoviesList = watchMoviesList.filter({
-            $0.id != movie.id
-        })
-        if (deleteFromAllMovies) {
-            MVClient.sharedInstance.allMovies = MVClient.sharedInstance.allMovies.filter({
-                $0.id != movie.id
+    func delete(movie: Movie, addToWatchedListMovies: Bool) {
+        if(!addToWatchedListMovies) {
+            watchMoviesList = watchMoviesList.filter({
+                let bool = ($0.id != movie.id)
+                if !bool {
+                    MVClient.sharedInstance.sharedContext.deleteObject($0)
+                    MVClient.sharedInstance.saveContext()
+                }
+                return bool
             })
         } else {
-            var index = 0
-            for mov in MVClient.sharedInstance.allMovies {
-                if (mov.id == movie.id) {
-                    break
-                } else {
-                    index = index + 1
-                }
+            let movies = fetchMovies(movie.id)
+            if (!movies.isEmpty) {
+                let movieContext: NSManagedObject = movies[0]
+                movieContext.setValue(true, forKey: "watched")
+                MVClient.sharedInstance.saveContext()
+                watchMoviesList = MVClient.sharedInstance.fetchMovies(false)
             }
-            MVClient.sharedInstance.allMovies[index].watched = true
         }
-//        print("allMovies in delete : ", MVClient.sharedInstance.allMovies)
     }
 }
+
+func fetchMovies(id: NSNumber) -> [Movie] {
+    
+    // Create the Fetch Request
+    let fetchRequest = NSFetchRequest(entityName: "Movie")
+    fetchRequest.predicate = NSPredicate(format: "id == %@", id);
+    
+    // Execute the Fetch Request
+    do {
+        return try MVClient.sharedInstance.sharedContext.executeFetchRequest(fetchRequest) as! [Movie]
+    } catch _ {
+        return [Movie]()
+    }
+}
+
 
 extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -169,7 +183,7 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
         
         /* Get cell type */
         let cellReuseIdentifier = "WatchlistCell"
-        var movie = watchMoviesList[indexPath.row]
+        let movie = watchMoviesList[indexPath.row]
         let cell = tableView.dequeueReusableCellWithIdentifier(cellReuseIdentifier) as! WatchListTableViewCell!
         
         /* Set cell defaults */
@@ -180,7 +194,7 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
         cell.movieWatched.tag = indexPath.row
         cell.movieWatched.addTarget(self, action: #selector(WatchListViewController.watchedMovie(_:)), forControlEvents: .TouchUpInside)
         
-        cell.movieTime.text = "Time: " + movie.getHoursAndMinutes(movie.runTime!)
+        cell.movieTime.text = "Time: " + movie.getHoursAndMinutes(Float(movie.runTime!))
         cell.movieGenre.text = movie.genres
         
         cell.moviePoster.image = UIImage(named: "Film")
@@ -213,16 +227,15 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
         switch (editingStyle) {
         case .Delete:
             let movie = watchMoviesList[indexPath.row]
-            deleteWatchedListMovies(movie, indexPath: indexPath, deleteFromAllMovies: true)
+            deleteWatchedListMovies(movie, indexPath: indexPath, addToWatchedListMovies: false)
         default:
             break
         }
     }
     
-//    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-//        let movie = watchMoviesList[indexPath.row]
-//        print("Movie: ", movie)
-//        deleteWatchedListMovies(movie, indexPath: indexPath, deleteFromAllMovies: false)
-//    }
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let movie = watchMoviesList[indexPath.row]
+        print("Movie: ", movie)
+    }
     
 }
