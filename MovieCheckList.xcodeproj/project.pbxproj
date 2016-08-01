@@ -15,6 +15,8 @@
 		320AB8F81D4401A300142419 /* WatchListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320AB8F71D4401A300142419 /* WatchListTableViewCell.swift */; };
 		320AB8FA1D44F5FE00142419 /* WatchedListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320AB8F91D44F5FE00142419 /* WatchedListViewController.swift */; };
 		320AB8FC1D44FDB800142419 /* WatchedListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320AB8FB1D44FDB800142419 /* WatchedListTableViewCell.swift */; };
+		320AB9391D4C546900142419 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 320AB9371D4C546900142419 /* Model.xcdatamodeld */; };
+		320AB93B1D4ECFED00142419 /* CoreDataStackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320AB93A1D4ECFED00142419 /* CoreDataStackManager.swift */; };
 		32B0D75A1D48E6AE0027F146 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B0D7591D48E6AE0027F146 /* ImageCache.swift */; };
 		32F70E371D12B7E1002DF8BA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32F70E361D12B7E1002DF8BA /* AppDelegate.swift */; };
 		32F70E3C1D12B7E1002DF8BA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 32F70E3A1D12B7E1002DF8BA /* Main.storyboard */; };
@@ -55,6 +57,8 @@
 		320AB8F71D4401A300142419 /* WatchListTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WatchListTableViewCell.swift; sourceTree = "<group>"; };
 		320AB8F91D44F5FE00142419 /* WatchedListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WatchedListViewController.swift; sourceTree = "<group>"; };
 		320AB8FB1D44FDB800142419 /* WatchedListTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WatchedListTableViewCell.swift; sourceTree = "<group>"; };
+		320AB9381D4C546900142419 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
+		320AB93A1D4ECFED00142419 /* CoreDataStackManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStackManager.swift; sourceTree = "<group>"; };
 		32B0D7591D48E6AE0027F146 /* ImageCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 		32F70E331D12B7E1002DF8BA /* MovieCheckList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MovieCheckList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32F70E361D12B7E1002DF8BA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -114,7 +118,9 @@
 		320AB8E61D3492FF00142419 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				320AB93A1D4ECFED00142419 /* CoreDataStackManager.swift */,
 				320AB8E71D3492FF00142419 /* Movie.swift */,
+				320AB9371D4C546900142419 /* Model.xcdatamodeld */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -346,6 +352,7 @@
 				32B0D75A1D48E6AE0027F146 /* ImageCache.swift in Sources */,
 				32F70E6B1D233F87002DF8BA /* MVConstants.swift in Sources */,
 				320AB8EC1D3AD9E100142419 /* MoviePickerViewController.swift in Sources */,
+				320AB93B1D4ECFED00142419 /* CoreDataStackManager.swift in Sources */,
 				320AB8DE1D3193A200142419 /* MVAuthViewController.swift in Sources */,
 				32F70E691D233F41002DF8BA /* MVClient.swift in Sources */,
 				32F70E721D313CBA002DF8BA /* Result.swift in Sources */,
@@ -354,6 +361,7 @@
 				32F70E7A1D3140BD002DF8BA /* Error.swift in Sources */,
 				320AB8FC1D44FDB800142419 /* WatchedListTableViewCell.swift in Sources */,
 				320AB8E11D3491BA00142419 /* LoginViewController.swift in Sources */,
+				320AB9391D4C546900142419 /* Model.xcdatamodeld in Sources */,
 				320AB8FA1D44F5FE00142419 /* WatchedListViewController.swift in Sources */,
 				320AB8F81D4401A300142419 /* WatchListTableViewCell.swift in Sources */,
 				320AB8EA1D34940700142419 /* WatchListViewController.swift in Sources */,
@@ -605,6 +613,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		320AB9371D4C546900142419 /* Model.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				320AB9381D4C546900142419 /* Model.xcdatamodel */,
+			);
+			currentVersion = 320AB9381D4C546900142419 /* Model.xcdatamodel */;
+			path = Model.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 32F70E2B1D12B7E1002DF8BA /* Project object */;
 }

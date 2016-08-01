@@ -15,9 +15,9 @@ class WatchedListViewController: UIViewController {
     var watchedMoviesList: [Movie] = [Movie]()
     
     override func viewWillAppear(animated: Bool) {
-        let movies = MVClient.sharedInstance.getWatchedMoviesList()
+        let movies = MVClient.sharedInstance.fetchMovies(true)
         if (!movies.isEmpty) {
-            print("array")
+            print("array in WatchedListViewController")
             watchedMoviesList = movies
             self.watchedListTableView.reloadData()
         } else {
@@ -48,7 +48,7 @@ class WatchedListViewController: UIViewController {
                 print(err)
             } else{
                 if status_code == 13 {
-                    self.delete(movie)
+                    self.deleteMovie(movie)
                     dispatch_async(dispatch_get_main_queue()) {
                         self.watchedListTableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Fade)
                     }
@@ -57,15 +57,16 @@ class WatchedListViewController: UIViewController {
                 }
             }
         }
-        
     }
     
-    func delete(movie: Movie) {
+    func deleteMovie(movie: Movie) {
         watchedMoviesList = watchedMoviesList.filter({
-            $0.id != movie.id
-        })
-        MVClient.sharedInstance.allMovies = MVClient.sharedInstance.allMovies.filter({
-            $0.id != movie.id
+            let bool = ($0.id != movie.id)
+            if !bool {
+                MVClient.sharedInstance.sharedContext.deleteObject($0)
+                MVClient.sharedInstance.saveContext()
+            }
+            return bool
         })
     }
 }
@@ -82,14 +83,14 @@ extension WatchedListViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         /* Get cell type */
         let cellReuseIdentifier = "WatchedlistCell"
-        var movie = watchedMoviesList[indexPath.row]
+        let movie = watchedMoviesList[indexPath.row]
         let cell = tableView.dequeueReusableCellWithIdentifier(cellReuseIdentifier) as! WatchedListTableViewCell!
         
         /* Set cell defaults */
         if ((movie.releaseYear) != nil) {
             cell.movieTitle.text = "\(movie.title) (\(movie.releaseYear!))"
         }
-        cell.movieTime.text = "Time: " + movie.getHoursAndMinutes(movie.runTime!)
+        cell.movieTime.text = "Time: " + movie.getHoursAndMinutes(Float(movie.runTime!))
         cell.movieGenre.text = movie.genres
         
         cell.moviePoster.image = UIImage(named: "Film")

@@ -6,30 +6,36 @@
 //  Copyright © 2016 Rahath cherukuri. All rights reserved.
 //
 
-import Foundation
 import UIKit
+import CoreData
 
-struct Movie {
+class Movie: NSManagedObject {
     
     // MARK: Properties
     
-    var title = ""
-    var id = 0
-    var watched: Bool? = nil
-    var posterPath: String? = nil
-    var releaseYear: String? = nil
-    var originalLanguage: String? = nil
-    var overview: String? = nil
-    var tagline: String? = nil
-    var rating: Float? = nil
-    var runTime: Float? = nil
-    var genres: String? = nil
-
+    @NSManaged var title:String
+    @NSManaged var id: NSNumber // Int
+    @NSManaged var watched: NSNumber? //Bool
+    @NSManaged var posterPath: String?
+    @NSManaged var releaseYear: String?
+    @NSManaged var originalLanguage: String?
+    @NSManaged var overview: String?
+    @NSManaged var tagline: String?
+    @NSManaged var rating: NSNumber? // Float
+    @NSManaged var runTime: NSNumber? // Float
+    @NSManaged var genres: String?
     
     // MARK: Initializers
+    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    }
     
     /* Construct a TMDBMovie from a dictionary */
-    init(dictionary: [String : AnyObject]) {
+    init(dictionary: [String : AnyObject], context: NSManagedObjectContext) {
+        
+        // Core Data
+        let entity =  NSEntityDescription.entityForName("Movie", inManagedObjectContext: context)!
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
         
         title = dictionary[MVClient.JSONResponseKeys.MovieTitle] as! String
         id = dictionary[MVClient.JSONResponseKeys.MovieID] as! Int

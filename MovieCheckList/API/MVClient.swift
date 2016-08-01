@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 final class MVClient: NSObject {
     
@@ -23,7 +24,19 @@ final class MVClient: NSObject {
     var sessionID: String? = "4ef795cbe240c4d61a8e4e24c8e33128d001639b"
     var userID: Int? = 6325437
     
-    var allMovies: [Movie] = []
+    lazy var sharedContext = {
+        CoreDataStackManager.sharedInstance().managedObjectContext
+    }()
+    
+    lazy var scratchContext: NSManagedObjectContext = {
+        var context = NSManagedObjectContext()
+        context.persistentStoreCoordinator =  CoreDataStackManager.sharedInstance().persistentStoreCoordinator
+        return context
+    }()
+    
+    func saveContext() {
+        CoreDataStackManager.sharedInstance().saveContext()
+    }
     
     // MARK: Initializers
     

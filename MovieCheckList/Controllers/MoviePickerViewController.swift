@@ -124,17 +124,23 @@ extension MoviePickerViewController: UITableViewDelegate, UITableViewDataSource 
         
         let movie = movies[indexPath.row]
         var movieAlreadySaved: Bool = false
-        _ = MVClient.sharedInstance.allMovies.map({
+        _ = MVClient.sharedInstance.fetchMovies(false).map({
             if ($0.id == movie.id) {
+                print("Movie already in watchList")
                 movieAlreadySaved = true
-                if ($0.watched == false) {
-                    print("Movie already in watchList")
-                } else {
-                    print("Movie already in watchedList")
-                }
                 return
             }
         })
+        
+        if(!movieAlreadySaved) {
+            _ = MVClient.sharedInstance.fetchMovies(true).map({
+                if ($0.id == movie.id) {
+                    print("Movie already in watchedList")
+                    movieAlreadySaved = true
+                    return
+                }
+            })
+        }
         
         if (!movieAlreadySaved) {
             MVClient.sharedInstance.postToWatchlist(movie, watchlist: true) { status_code, error in

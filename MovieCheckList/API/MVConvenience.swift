@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import CoreData
 
 extension MVClient {
     
@@ -159,8 +160,7 @@ extension MVClient {
                         case .Success(let mov):
                             var movieDictionary: [String: AnyObject] = mov as! [String : AnyObject]
                             movieDictionary[MVClient.JSONResponseKeys.MovieWatched] = false
-                            let movie = Movie(dictionary: movieDictionary)
-                            MVClient.sharedInstance.allMovies.append(movie)
+                            _ = Movie(dictionary: movieDictionary, context: MVClient.sharedInstance.sharedContext)
                             dispatch_group_leave(myGroup)
                         case .Failure(let error):
                             let errorString = self.getErrorString(error)
@@ -169,8 +169,9 @@ extension MVClient {
                     }
                 })
                 dispatch_group_notify(myGroup, dispatch_get_main_queue(), {
-                    let watchListMovies:[Movie] = self.getToWatchMoviesList()
-                    completionHandler(success: true, errorString: nil, movies: watchListMovies)
+                    MVClient.sharedInstance.saveContext()
+                    let toWatchMovies = self.fetchMovies(false)
+                    completionHandler(success: true, errorString: nil, movies: toWatchMovies)
                 })
             case .Failure(let error):
                 let errorString = self.getErrorString(error)
@@ -211,8 +212,7 @@ extension MVClient {
                         case .Success(let mov):
                             var movieDictionary: [String: AnyObject] = mov as! [String : AnyObject]
                             movieDictionary[MVClient.JSONResponseKeys.MovieWatched] = true
-                            let movie = Movie(dictionary: movieDictionary)
-                            MVClient.sharedInstance.allMovies.append(movie)
+                            _ = Movie(dictionary: movieDictionary, context: MVClient.sharedInstance.sharedContext)
                             dispatch_group_leave(myGroup)
                         case .Failure(let error):
                             let errorString = self.getErrorString(error)
@@ -221,7 +221,8 @@ extension MVClient {
                     }
                 })
                 dispatch_group_notify(myGroup, dispatch_get_main_queue(), {
-                    let watchListMovies:[Movie] = self.getWatchedMoviesList()
+                    MVClient.sharedInstance.saveContext()
+                    let watchListMovies = self.fetchMovies(true)
                     completionHandler(success: true, errorString: nil, movies: watchListMovies)
                 })
             case .Failure(let error):
@@ -250,7 +251,7 @@ extension MVClient {
                     }
                     var movies: [Movie] = []
                     _ = movieResults.map({
-                        let movie = Movie(dictionary: $0)
+                        let movie = Movie(dictionary: $0, context: MVClient.sharedInstance.scratchContext)
                         movies.append(movie)
                     })
                     completionHandler(result: movies, error: nil)
@@ -263,20 +264,21 @@ extension MVClient {
         return task
     }
     
-    func getToWatchMoviesList()-> [Movie] {
+    func fetchMovies(watched: Bool) -> [Movie] {
         
-        let watchListMovies = MVClient.sharedInstance.allMovies.filter({
-            $0.watched! == false
-        })
-        return watchListMovies
+        // Create the Fetch Request
+        let fetchRequest = NSFetchRequest(entityName: "Movie")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key:"id", ascending: true)]
+        fetchRequest.predicate = NSPredicate(format: "watched == %@", watched);
+        
+        // Execute the Fetch Request
+        do {
+            return try sharedContext.executeFetchRequest(fetchRequest) as! [Movie]
+        } catch _ {
+            return [Movie]()
+        }
     }
-    
-    func getWatchedMoviesList()-> [Movie] {
-        let watchedMovies = MVClient.sharedInstance.allMovies.filter({
-            $0.watched! == true
-        })
-        return watchedMovies
-    }
+
     
 //    https://api.themoviedb.org/3/movie/256924?api_key=260bdeaf6536281935bb16ea222e85ff
     func getMovieInfo(movieId: Int, completionHandler: Result<AnyObject, Error> -> Void) {
