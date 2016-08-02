@@ -95,6 +95,13 @@ extension MoviePickerViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
     }
+    
+    func showAlertView(message: String) {
+        let alert = UIAlertController(title: nil, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        let dismiss = UIAlertAction (title: "OK", style: UIAlertActionStyle.Default, handler: nil)
+        alert.addAction(dismiss)
+        presentViewController(alert, animated: true, completion: nil)
+    }
 }
 
 // MARK: - MoviePickerViewController: UITableViewDelegate, UITableViewDataSource
@@ -154,6 +161,9 @@ extension MoviePickerViewController: UITableViewDelegate, UITableViewDataSource 
                             self.dismissViewControllerAnimated(true, completion: nil)
                         }
                     } else {
+                        dispatch_async(dispatch_get_main_queue()) {
+                            self.showAlertView("Sorry, couldn't add the movie. Try again later!")
+                        }
                         print("Unexpected status code \(status_code)")
                     }
                 }

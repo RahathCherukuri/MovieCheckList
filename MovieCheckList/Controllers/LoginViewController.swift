@@ -20,6 +20,9 @@ class LoginViewController: UIViewController {
             if success {
                 self.completeLogin()
             } else {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.showAlertView("Sorry, couldn't login. Try again later!")
+                }
                 self.displayError(errorString)
             }
         }
@@ -35,5 +38,13 @@ class LoginViewController: UIViewController {
     func displayError(errorString: String?) {
         print("errorString: \(errorString)")
     }
+    
+    func showAlertView(message: String) {
+        let alert = UIAlertController(title: nil, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        let dismiss = UIAlertAction (title: "OK", style: UIAlertActionStyle.Default, handler: nil)
+        alert.addAction(dismiss)
+        presentViewController(alert, animated: true, completion: nil)
+    }
+    
 }
 

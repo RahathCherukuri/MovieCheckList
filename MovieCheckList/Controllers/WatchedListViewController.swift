@@ -28,6 +28,9 @@ class WatchedListViewController: UIViewController {
                         self.watchedListTableView.reloadData()
                     }
                 } else {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.showAlertView(errorString!)
+                    }
                     self.displayError(errorString)
                 }
             }
@@ -53,6 +56,9 @@ class WatchedListViewController: UIViewController {
                         self.watchedListTableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Fade)
                     }
                 }else {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.showAlertView("Sorry, couldn't delete the movie. Try again later!")
+                    }
                     print("Unexpected status code \(status_code)")
                 }
             }
@@ -69,6 +75,14 @@ class WatchedListViewController: UIViewController {
             return bool
         })
     }
+    
+    func showAlertView(message: String) {
+        let alert = UIAlertController(title: nil, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        let dismiss = UIAlertAction (title: "OK", style: UIAlertActionStyle.Default, handler: nil)
+        alert.addAction(dismiss)
+        presentViewController(alert, animated: true, completion: nil)
+    }
+
 }
 
 extension WatchedListViewController: UITableViewDelegate, UITableViewDataSource {
@@ -97,16 +111,22 @@ extension WatchedListViewController: UITableViewDelegate, UITableViewDataSource 
         cell.moviePoster.contentMode = UIViewContentMode.ScaleAspectFit
         var posterSizes = ["w92", "w154", "w185", "w342", "w500", "w780", "original"]
         
+        cell.spinner.hidden = false
+        cell.spinner.startAnimating()
+        
         if let localImage = movie.image {
             cell.moviePoster.image = localImage
+            stopAndHideSpinner(cell)
         } else if movie.posterPath == nil || movie.posterPath == "" {
             cell.moviePoster.image = UIImage(named: "noImage")
+            stopAndHideSpinner(cell)
         } else {
             if let posterPath = movie.posterPath {
                 MVClient.sharedInstance.taskForGETImage(posterSizes[2], filePath: posterPath, completionHandler: { (imageData, error) in
                     if let image = UIImage(data: imageData!) {
                         movie.image = image
                         dispatch_async(dispatch_get_main_queue()) {
+                            self.stopAndHideSpinner(cell)
                             cell.moviePoster!.image = image
                         }
                     } else {
@@ -118,6 +138,10 @@ extension WatchedListViewController: UITableViewDelegate, UITableViewDataSource 
         return cell
     }
     
+    func stopAndHideSpinner(cell: WatchedListTableViewCell) {
+        cell.spinner.stopAnimating()
+        cell.spinner.hidden = true
+    }
     
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         switch (editingStyle) {

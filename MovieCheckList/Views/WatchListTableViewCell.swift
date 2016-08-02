@@ -20,4 +20,5 @@ class WatchListTableViewCell: UITableViewCell {
     
     @IBOutlet weak var movieWatched: UIButton!
     
+    @IBOutlet weak var spinner: UIActivityIndicatorView!
 }
