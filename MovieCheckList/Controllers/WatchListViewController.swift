@@ -60,9 +60,6 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     
     func setUpUI() {
         tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add, target: self, action: #selector(WatchListViewController.addActor))
-        
-//        parentViewController?.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add, target: self, action: #selector(WatchListViewController.addActor))
-        
     }
     
     func displayError(errorString: String?) {
@@ -70,11 +67,10 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     }
     
     func watchedMovie(sender: UIButton) {
-        let image: UIImage = UIImage(named: "SelectedCheckMark")!
-        sender.setImage(image, forState: .Normal)
+        sender.setImage(UIImage(named: "SelectedCheckMark")!, forState: .Normal)
         let movie = watchMoviesList[sender.tag]
         let indexPath: NSIndexPath = NSIndexPath(forRow: sender.tag, inSection: 0)
-        deleteWatchedListMovies(movie, indexPath: indexPath, addToWatchedListMovies: true)
+        deleteWatchedListMovies(movie, indexPath: indexPath, addToWatchedListMovies: true, sender: sender)
     }
     
     // MARK: - Actions
@@ -111,9 +107,10 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
         }
     }
     
-    func deleteWatchedListMovies(movie: Movie, indexPath: NSIndexPath, addToWatchedListMovies: Bool) {
+    func deleteWatchedListMovies(movie: Movie, indexPath: NSIndexPath, addToWatchedListMovies: Bool, sender: UIButton?) {
         MVClient.sharedInstance.postToWatchlist(movie, watchlist: false) { status_code, error in
             if let err = error {
+                self.setButtonToInitialState(addToWatchedListMovies, sender: sender)
                 dispatch_async(dispatch_get_main_queue()) {
                     self.showAlertView("Sorry, couldn't delete the movie. Try again later!")
                 }
@@ -128,6 +125,7 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
                     } else {
                         MVClient.sharedInstance.postToFavorites(movie, favorite: true) {status_code, error in
                             if let err = error {
+                                self.setButtonToInitialState(addToWatchedListMovies, sender: sender)
                                 print(err)
                             } else {
                                 if status_code == 1 || status_code == 12 {
@@ -136,6 +134,7 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
                                         self.watchListTableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Fade)
                                     }
                                 } else {
+                                    self.setButtonToInitialState(addToWatchedListMovies, sender: sender)
                                     dispatch_async(dispatch_get_main_queue()) {
                                         self.showAlertView("Sorry, couldn't delete the movie. Try again later!")
                                     }
@@ -146,11 +145,20 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
                     }
                     
                 }else {
+                    self.setButtonToInitialState(addToWatchedListMovies, sender: sender)
                     dispatch_async(dispatch_get_main_queue()) {
                         self.showAlertView("Sorry, couldn't delete the movie. Try again later!")
                     }
                     print("Unexpected status code \(status_code)")
                 }
+            }
+        }
+    }
+    
+    func setButtonToInitialState(addToWatchedListMovies: Bool, sender: UIButton?) {
+        if (addToWatchedListMovies) {
+            dispatch_async(dispatch_get_main_queue()) {
+                sender!.setImage(UIImage(named: "CheckMark")!, forState: .Normal)
             }
         }
     }
@@ -266,7 +274,7 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
         switch (editingStyle) {
         case .Delete:
             let movie = watchMoviesList[indexPath.row]
-            deleteWatchedListMovies(movie, indexPath: indexPath, addToWatchedListMovies: false)
+            deleteWatchedListMovies(movie, indexPath: indexPath, addToWatchedListMovies: false, sender: nil)
         default:
             break
         }
