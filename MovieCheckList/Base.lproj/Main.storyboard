@@ -534,7 +534,7 @@
         <!--MovieCheckList-->
         <scene sceneID="Nfb-5A-ZpK">
             <objects>
-                <tabBarController id="hVD-9m-HWS" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="hVD-9m-HWS" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" title="MovieCheckList" id="l31-eQ-bp9"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="N41-7O-qUZ">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="49"/>
