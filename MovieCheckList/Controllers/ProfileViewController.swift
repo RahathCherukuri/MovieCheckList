@@ -26,13 +26,25 @@ class ProfileViewController: UIViewController {
         greetings.text = "Greetings " + name
         let toWatchMovies = MVClient.sharedInstance.fetchMovies(false)
         let watchedMovies = MVClient.sharedInstance.fetchMovies(true)
-        print("toWatchMovies: ",toWatchMovies.count)
-        print("watchedMovies: ",watchedMovies.count)
         toWatchMoviesCount.text = String(toWatchMovies.count)
+        setLabel(toWatchMoviesCount)
         watchedMoviesCount.text = String(watchedMovies.count)
+        setLabel(watchedMoviesCount)
     }
     
     @IBAction func signOut(sender: UIButton) {
         print("SignOut Clikced")
+    }
+    
+    func setLabel(label: UILabel) {
+        let size:CGFloat = 60.0
+        label.textColor = .greenColor()
+        label.textAlignment = .Center
+        label.font = UIFont.systemFontOfSize(20.0)
+        label.bounds = CGRectMake(0.0, 0.0, size, size)
+        label.layer.cornerRadius = size / 2
+        label.layer.borderWidth = 3.0
+        label.layer.backgroundColor = UIColor.clearColor().CGColor
+        label.layer.borderColor = UIColor.greenColor().CGColor
     }
 }

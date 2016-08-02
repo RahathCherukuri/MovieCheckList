@@ -18,6 +18,7 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     // MARK: - Life Cycle
     
     override func viewWillAppear(animated: Bool) {
+        setUpUI()
         let movies = MVClient.sharedInstance.fetchMovies(false)
         if (!movies.isEmpty) {
             print("array in WatchListViewController")
@@ -31,16 +32,22 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
                     }
                     self.loadWatchedListMovies()
                 } else {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.showAlertView(errorString!)
+                    }
                     self.displayError(errorString)
                 }
             }
         }
     }
-
     
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.navigationItem.rightBarButtonItem = nil
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpUI()
     }
     
     func loadWatchedListMovies() {
@@ -52,7 +59,10 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     }
     
     func setUpUI() {
-        parentViewController?.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add, target: self, action: #selector(WatchListViewController.addActor))
+        tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add, target: self, action: #selector(WatchListViewController.addActor))
+        
+//        parentViewController?.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Add, target: self, action: #selector(WatchListViewController.addActor))
+        
     }
     
     func displayError(errorString: String?) {
@@ -60,6 +70,8 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     }
     
     func watchedMovie(sender: UIButton) {
+        let image: UIImage = UIImage(named: "SelectedCheckMark")!
+        sender.setImage(image, forState: .Normal)
         let movie = watchMoviesList[sender.tag]
         let indexPath: NSIndexPath = NSIndexPath(forRow: sender.tag, inSection: 0)
         deleteWatchedListMovies(movie, indexPath: indexPath, addToWatchedListMovies: true)
@@ -92,6 +104,7 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
                         self.watchListTableView.reloadData()
                     }
                 case .Failure(let error):
+                    self.showAlertView(MVClient.sharedInstance.getErrorString(error))
                     self.displayError(MVClient.sharedInstance.getErrorString(error))
                 }
             }
@@ -101,6 +114,9 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     func deleteWatchedListMovies(movie: Movie, indexPath: NSIndexPath, addToWatchedListMovies: Bool) {
         MVClient.sharedInstance.postToWatchlist(movie, watchlist: false) { status_code, error in
             if let err = error {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.showAlertView("Sorry, couldn't delete the movie. Try again later!")
+                }
                 print(err)
             } else{
                 if status_code == 13 {
@@ -120,6 +136,9 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
                                         self.watchListTableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Fade)
                                     }
                                 } else {
+                                    dispatch_async(dispatch_get_main_queue()) {
+                                        self.showAlertView("Sorry, couldn't delete the movie. Try again later!")
+                                    }
                                     print("Unexpected status code \(status_code)")
                                 }
                             }
@@ -127,6 +146,9 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
                     }
                     
                 }else {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.showAlertView("Sorry, couldn't delete the movie. Try again later!")
+                    }
                     print("Unexpected status code \(status_code)")
                 }
             }
@@ -153,22 +175,28 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
             }
         }
     }
-}
-
-func fetchMovies(id: NSNumber) -> [Movie] {
     
-    // Create the Fetch Request
-    let fetchRequest = NSFetchRequest(entityName: "Movie")
-    fetchRequest.predicate = NSPredicate(format: "id == %@", id);
+    func fetchMovies(id: NSNumber) -> [Movie] {
+        
+        // Create the Fetch Request
+        let fetchRequest = NSFetchRequest(entityName: "Movie")
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id);
+        
+        // Execute the Fetch Request
+        do {
+            return try MVClient.sharedInstance.sharedContext.executeFetchRequest(fetchRequest) as! [Movie]
+        } catch _ {
+            return [Movie]()
+        }
+    }
     
-    // Execute the Fetch Request
-    do {
-        return try MVClient.sharedInstance.sharedContext.executeFetchRequest(fetchRequest) as! [Movie]
-    } catch _ {
-        return [Movie]()
+    func showAlertView(message: String) {
+        let alert = UIAlertController(title: nil, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        let dismiss = UIAlertAction (title: "OK", style: UIAlertActionStyle.Default, handler: nil)
+        alert.addAction(dismiss)
+        presentViewController(alert, animated: true, completion: nil)
     }
 }
-
 
 extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -201,16 +229,22 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
         cell.moviePoster.contentMode = UIViewContentMode.ScaleAspectFit
         var posterSizes = ["w92", "w154", "w185", "w342", "w500", "w780", "original"]
         
+        cell.spinner.hidden = false
+        cell.spinner.startAnimating()
+        
         if let localImage = movie.image {
+            stopAndHideSpinner(cell)
             cell.moviePoster.image = localImage
         } else if movie.posterPath == nil || movie.posterPath == "" {
             cell.moviePoster.image = UIImage(named: "noImage")
+            stopAndHideSpinner(cell)
         } else {
             if let posterPath = movie.posterPath {
                 MVClient.sharedInstance.taskForGETImage(posterSizes[2], filePath: posterPath, completionHandler: { (imageData, error) in
                     if let image = UIImage(data: imageData!) {
                         movie.image = image
                         dispatch_async(dispatch_get_main_queue()) {
+                            self.stopAndHideSpinner(cell)
                             cell.moviePoster!.image = image
                         }
                     } else {
@@ -221,6 +255,11 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
         }
         
         return cell
+    }
+    
+    func stopAndHideSpinner(cell: WatchListTableViewCell) {
+        cell.spinner.stopAnimating()
+        cell.spinner.hidden = true
     }
     
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {

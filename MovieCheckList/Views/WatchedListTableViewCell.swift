@@ -18,4 +18,6 @@ class WatchedListTableViewCell: UITableViewCell {
     
     @IBOutlet weak var movieGenre: UILabel!
     
+    @IBOutlet weak var spinner: UIActivityIndicatorView!
+    
 }
