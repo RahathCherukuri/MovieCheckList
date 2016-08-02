@@ -71,6 +71,11 @@ class Movie: NSManagedObject {
         get { return MVClient.Caches.imageCache.imageWithIdentifier(String(id)) }
         set { MVClient.Caches.imageCache.storeImage(newValue, withIdentifier: String(id)) }
     }
+    
+    var detailImage: UIImage? {
+        get {return MVClient.Caches.imageCache.imageWithIdentifier((String(id) + "detail"))}
+        set { MVClient.Caches.imageCache.storeImage(newValue, withIdentifier: (String(id) + "detail")) }
+    }
 
 //  Helper Functions
     

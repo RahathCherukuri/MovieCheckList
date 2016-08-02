@@ -234,8 +234,10 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let movie = watchMoviesList[indexPath.row]
-        print("Movie: ", movie)
+        /* Push the movie detail view */
+        let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MovieDetailViewController") as! MovieDetailViewController
+        controller.movie = watchMoviesList[indexPath.row]
+        self.navigationController!.pushViewController(controller, animated: true)
     }
     
 }
