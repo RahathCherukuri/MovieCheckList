@@ -67,6 +67,11 @@ class Movie: NSManagedObject {
         runTime = dictionary["runtime"] as? Float
     }
     
+    override func prepareForDeletion() {
+        image = nil
+        detailImage = nil
+    }
+    
     var image: UIImage? {
         get { return MVClient.Caches.imageCache.imageWithIdentifier(String(id)) }
         set { MVClient.Caches.imageCache.storeImage(newValue, withIdentifier: String(id)) }
