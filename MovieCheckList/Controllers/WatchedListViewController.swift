@@ -127,5 +127,12 @@ extension WatchedListViewController: UITableViewDelegate, UITableViewDataSource 
         default:
             break
         }
-    }  
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        /* Push the movie detail view */
+        let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MovieDetailViewController") as! MovieDetailViewController
+        controller.movie = watchedMoviesList[indexPath.row]
+        self.navigationController!.pushViewController(controller, animated: true)
+    }
 }
