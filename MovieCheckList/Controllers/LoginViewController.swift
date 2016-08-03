@@ -11,9 +11,17 @@ import UIKit
 class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
+        print("In ViewDidLoad")
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        
+        getUserAndSessionID()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        print("In ViewWillAppear")
+        super.viewWillAppear(animated)
+    }
+    
+    @IBAction func login(sender: UIButton) {
         MVClient.sharedInstance.authenticateWithViewController(self) { (success, errorString) in
             print("success: ", success)
             print("errorString: ", errorString)
@@ -25,6 +33,21 @@ class LoginViewController: UIViewController {
                 }
                 self.displayError(errorString)
             }
+        }
+    }
+    
+    func getUserAndSessionID() {
+        guard let sessionID = NSUserDefaults.standardUserDefaults().stringForKey(MVClient.UserDefaults.SessionID) else {
+            return
+        }
+        let userID = NSUserDefaults.standardUserDefaults().integerForKey(MVClient.UserDefaults.UserID)
+        
+        if (userID != 0) {
+            MVClient.sharedInstance.userID = userID
+            MVClient.sharedInstance.sessionID = sessionID
+            print("userID: ", userID)
+            print("sessionID: ", sessionID)
+            completeLogin()
         }
     }
     

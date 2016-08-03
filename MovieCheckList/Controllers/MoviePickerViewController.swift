@@ -138,6 +138,9 @@ extension MoviePickerViewController: UITableViewDelegate, UITableViewDataSource 
                 return
             }
         })
+        if (movieAlreadySaved) {
+            showAlertView("Movie already in watchList")
+        }
         
         if(!movieAlreadySaved) {
             _ = MVClient.sharedInstance.fetchMovies(true).map({
@@ -147,6 +150,10 @@ extension MoviePickerViewController: UITableViewDelegate, UITableViewDataSource 
                     return
                 }
             })
+        }
+        
+        if (movieAlreadySaved) {
+            showAlertView("Movie already in watchedList")
         }
         
         if (!movieAlreadySaved) {

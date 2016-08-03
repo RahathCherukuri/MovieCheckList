@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class ProfileViewController: UIViewController {
     
@@ -22,8 +23,7 @@ class ProfileViewController: UIViewController {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        let name = "Rahath"
-        greetings.text = "Greetings " + name
+        greetings.text = "Greetings "
         let toWatchMovies = MVClient.sharedInstance.fetchMovies(false)
         let watchedMovies = MVClient.sharedInstance.fetchMovies(true)
         toWatchMoviesCount.text = String(toWatchMovies.count)
@@ -33,8 +33,35 @@ class ProfileViewController: UIViewController {
     }
     
     @IBAction func signOut(sender: UIButton) {
-        print("SignOut Clikced")
+        print("SignOut Clicked")
+        clearCoreData("Movie")
+        setNilValuesForUserDefaults()
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
+    
+    func setNilValuesForUserDefaults() {
+        let sessionID : String? = nil
+        let userID : Int = 0
+        NSUserDefaults.standardUserDefaults().setValue(sessionID, forKey: MVClient.UserDefaults.SessionID)
+        NSUserDefaults.standardUserDefaults().setInteger(userID, forKey: MVClient.UserDefaults.UserID)
+    }
+    
+    func clearCoreData(entity:String) {
+        let fetchRequest = NSFetchRequest(entityName: entity)
+        fetchRequest.includesPropertyValues = false
+        do {
+            if let results = try MVClient.sharedInstance.sharedContext.executeFetchRequest(fetchRequest) as? [NSManagedObject] {
+                for result in results {
+                    MVClient.sharedInstance.sharedContext.deleteObject(result)
+                }
+                
+                MVClient.sharedInstance.saveContext()
+            }
+        } catch {
+            print("failed to clear core data")
+        }
+    }
+
     
     func setLabel(label: UILabel) {
         let size:CGFloat = 60.0

@@ -24,6 +24,7 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
             print("array in WatchListViewController")
             watchMoviesList = movies
         } else {
+            print("Network Call for getWatchlistMovies")
             MVClient.sharedInstance.getWatchlistMovies() {(success, errorString, movies) in
                 if success {
                     self.watchMoviesList = movies!
@@ -53,6 +54,7 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     func loadWatchedListMovies() {
         let watchedMovies = MVClient.sharedInstance.fetchMovies(true)
         if watchedMovies.isEmpty {
+            print("Network Call for getFavoriteMovies")
             MVClient.sharedInstance.getFavoriteMovies() {(success, errorString, movies) in
             }
         }

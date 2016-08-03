@@ -18,11 +18,8 @@ final class MVClient: NSObject {
     var session: NSURLSession
     
     /* Authentication state */
-//    var sessionID : String? = nil
-//    var userID : Int? = nil
-    
-    var sessionID: String? = "4ef795cbe240c4d61a8e4e24c8e33128d001639b"
-    var userID: Int? = 6325437
+    var sessionID : String? = nil
+    var userID : Int? = nil
     
     lazy var sharedContext = {
         CoreDataStackManager.sharedInstance().managedObjectContext
