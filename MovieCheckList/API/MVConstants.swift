@@ -50,6 +50,11 @@ extension MVClient {
         
     }
     
+    struct UserDefaults {
+        static let UserID = "userID"
+        static let SessionID = "sessionID"
+    }
+    
     // MARK: URL Keys
     struct URLKeys {
         

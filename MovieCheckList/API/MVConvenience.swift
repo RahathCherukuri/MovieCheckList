@@ -24,11 +24,13 @@ extension MVClient {
                             switch dataResult {
                             case .Success(let sessionID):
                                 self.sessionID = sessionID as? String
+                                NSUserDefaults.standardUserDefaults().setValue(self.sessionID, forKey: MVClient.UserDefaults.SessionID)
                                 print("sessionID: \(self.sessionID)")
                                 self.getUserID(self.sessionID!) { dataResult in
                                     switch dataResult {
                                     case .Success(let id):
                                         self.userID = id as? Int
+                                        NSUserDefaults.standardUserDefaults().setInteger(self.userID!, forKey: MVClient.UserDefaults.UserID)
                                         print("UserID: \(self.userID)")
                                         completionHandler(success: true, errorString: nil)
                                     case .Failure(let error):
