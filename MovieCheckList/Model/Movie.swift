@@ -30,7 +30,7 @@ class Movie: NSManagedObject {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    /* Construct a TMDBMovie from a dictionary */
+    /* Construct a Movie from a dictionary */
     init(dictionary: [String : AnyObject], context: NSManagedObjectContext) {
         
         // Core Data
