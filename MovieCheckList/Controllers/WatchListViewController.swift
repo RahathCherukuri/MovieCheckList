@@ -95,9 +95,9 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
                 case .Success(let mov):
                     var movieDictionary: [String: AnyObject] = mov as! [String : AnyObject]
                     movieDictionary[MVClient.JSONResponseKeys.MovieWatched] = false
-                    let movie = Movie(dictionary: movieDictionary, context: MVClient.sharedInstance.sharedContext)
+                    _ = Movie(dictionary: movieDictionary, context: MVClient.sharedInstance.sharedContext)
                     MVClient.sharedInstance.saveContext()
-                    self.watchMoviesList.append(movie)
+                    self.watchMoviesList = MVClient.sharedInstance.fetchMovies(false)
                     dispatch_async(dispatch_get_main_queue()) {
                         self.watchListTableView.reloadData()
                     }
