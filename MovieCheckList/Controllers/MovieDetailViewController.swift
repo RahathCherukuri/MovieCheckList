@@ -30,11 +30,9 @@ class MovieDetailViewController: UIViewController {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        
-        print("movie: \(movie)")
-        
+
         if let movie = movie {
-            self.navigationItem.title = "\(movie.title)"
+            navigationItem.title = "\(movie.title)"
 
             movieGenre.text = "Genre: " + movie.genres!
             movieTime.text = "Time: " + movie.getHoursAndMinutes(Float(movie.runTime!))
@@ -74,5 +72,4 @@ class MovieDetailViewController: UIViewController {
         spinner.stopAnimating()
         spinner.hidden = true
     }
-
 }

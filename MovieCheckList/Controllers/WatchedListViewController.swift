@@ -17,7 +17,6 @@ class WatchedListViewController: UIViewController {
     override func viewWillAppear(animated: Bool) {
         let movies = MVClient.sharedInstance.fetchMovies(true)
         if (!movies.isEmpty) {
-            print("array in WatchedListViewController")
             watchedMoviesList = movies
             self.watchedListTableView.reloadData()
         } else {
@@ -35,10 +34,6 @@ class WatchedListViewController: UIViewController {
                 }
             }
         }
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
     }
     
     func displayError(errorString: String?) {
@@ -155,8 +150,8 @@ extension WatchedListViewController: UITableViewDelegate, UITableViewDataSource 
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         /* Push the movie detail view */
-        let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MovieDetailViewController") as! MovieDetailViewController
+        let controller = storyboard!.instantiateViewControllerWithIdentifier("MovieDetailViewController") as! MovieDetailViewController
         controller.movie = watchedMoviesList[indexPath.row]
-        self.navigationController!.pushViewController(controller, animated: true)
+        navigationController!.pushViewController(controller, animated: true)
     }
 }

@@ -9,22 +9,22 @@
 import UIKit
 
 class LoginViewController: UIViewController {
+    
+    @IBOutlet weak var authenticateMovieDB: UIButton!
 
     override func viewDidLoad() {
-        print("In ViewDidLoad")
         super.viewDidLoad()
         getUserAndSessionID()
     }
     
     override func viewWillAppear(animated: Bool) {
-        print("In ViewWillAppear")
         super.viewWillAppear(animated)
+        authenticateMovieDB.layer.cornerRadius = 10
+        authenticateMovieDB.clipsToBounds = true
     }
     
     @IBAction func login(sender: UIButton) {
         MVClient.sharedInstance.authenticateWithViewController(self) { (success, errorString) in
-            print("success: ", success)
-            print("errorString: ", errorString)
             if success {
                 self.completeLogin()
             } else {
@@ -45,8 +45,6 @@ class LoginViewController: UIViewController {
         if (userID != 0) {
             MVClient.sharedInstance.userID = userID
             MVClient.sharedInstance.sessionID = sessionID
-            print("userID: ", userID)
-            print("sessionID: ", sessionID)
             completeLogin()
         }
     }

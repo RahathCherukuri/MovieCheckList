@@ -34,18 +34,18 @@ class MoviePickerViewController: UIViewController {
         movieSearchBar.delegate = self
         
         /* Configure tap recognizer */
-//        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(MoviePickerViewController.handleSingleTap(_:)))
-//        tapRecognizer.numberOfTapsRequired = 1
-//        tapRecognizer.delegate = self
-//        view.addGestureRecognizer(tapRecognizer)
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(MoviePickerViewController.handleSingleTap(_:)))
+        tapRecognizer.numberOfTapsRequired = 1
+        tapRecognizer.delegate = self
+        view.addGestureRecognizer(tapRecognizer)
     }
     
-    // MARK: Dismissals
+//     MARK: Dismissals
     
-//    func handleSingleTap(recognizer: UITapGestureRecognizer) {
-//        view.endEditing(true)
-//    }
-//    
+    func handleSingleTap(recognizer: UITapGestureRecognizer) {
+        view.endEditing(true)
+    }
+
     
     @IBAction func cancel(sender: UIBarButtonItem) {
         delegate?.moviePicker(self, didPickMovie: nil)
@@ -162,7 +162,6 @@ extension MoviePickerViewController: UITableViewDelegate, UITableViewDataSource 
                     print(err)
                 } else {
                     if status_code == 1 || status_code == 12 {
-//                        print("Success status code \(status_code)")
                         dispatch_async(dispatch_get_main_queue()) {
                             self.delegate?.moviePicker(self, didPickMovie: movie)
                             self.dismissViewControllerAnimated(true, completion: nil)
@@ -176,9 +175,6 @@ extension MoviePickerViewController: UITableViewDelegate, UITableViewDataSource 
                 }
             }
         }
-        //        let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MovieDetailViewController") as! MovieDetailViewController
-//        controller.movie = movie
-//        self.navigationController!.pushViewController(controller, animated: true)
     }
 }
 

@@ -17,8 +17,12 @@ class ProfileViewController: UIViewController {
     
     @IBOutlet weak var watchedMoviesCount: UILabel!
     
+    @IBOutlet weak var signOutButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        signOutButton.layer.cornerRadius = 10
+        signOutButton.clipsToBounds = true
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -33,10 +37,9 @@ class ProfileViewController: UIViewController {
     }
     
     @IBAction func signOut(sender: UIButton) {
-        print("SignOut Clicked")
         clearCoreData("Movie")
         setNilValuesForUserDefaults()
-        self.dismissViewControllerAnimated(true, completion: nil)
+        dismissViewControllerAnimated(true, completion: nil)
     }
     
     func setNilValuesForUserDefaults() {
