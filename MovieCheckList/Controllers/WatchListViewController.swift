@@ -210,9 +210,11 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
+        
         /* Get cell type */
         let cellReuseIdentifier = "WatchlistCell"
         let movie = watchMoviesList[indexPath.row]
+        print("movie: ", movie)
         let cell = tableView.dequeueReusableCellWithIdentifier(cellReuseIdentifier) as! WatchListTableViewCell!
         
         /* Set cell defaults */
@@ -223,8 +225,13 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
         cell.movieWatched.tag = indexPath.row
         cell.movieWatched.addTarget(self, action: #selector(WatchListViewController.watchedMovie(_:)), forControlEvents: .TouchUpInside)
         
-        cell.movieTime.text = "Time: " + movie.getHoursAndMinutes(Float(movie.runTime!))
-        cell.movieGenre.text = movie.genres
+        if (movie.runTime != nil) {
+            cell.movieTime.text = "Time: " + movie.getHoursAndMinutes(Float(movie.runTime!))
+        }
+        
+        if (movie.genres != nil) {
+            cell.movieGenre.text = movie.genres
+        }
         
         cell.moviePoster.image = UIImage(named: "Film")
         cell.moviePoster.contentMode = UIViewContentMode.ScaleAspectFit
@@ -237,7 +244,7 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
             stopAndHideSpinner(cell)
             cell.moviePoster.image = localImage
         } else if movie.posterPath == nil || movie.posterPath == "" {
-            cell.moviePoster.image = UIImage(named: "noImage")
+            cell.moviePoster.image = UIImage(named: "Film")
             stopAndHideSpinner(cell)
         } else {
             if let posterPath = movie.posterPath {
@@ -279,6 +286,7 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         /* Push the movie detail view */
+        watchListTableView.deselectRowAtIndexPath(indexPath, animated: true)
         let controller = storyboard!.instantiateViewControllerWithIdentifier("MovieDetailViewController") as! MovieDetailViewController
         controller.movie = watchMoviesList[indexPath.row]
         navigationController!.pushViewController(controller, animated: true)

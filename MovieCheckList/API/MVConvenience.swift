@@ -327,8 +327,8 @@ extension MVClient {
                         return
                 }
                 completionHandler(result: result, error: nil)
-            case .Failure:
-                let errorString = self.getErrorString(Error.Parser(.BadData))
+            case .Failure(let error):
+                let errorString = self.getErrorString(error)
                 completionHandler(result: nil, error: errorString)
             }
         }
@@ -362,8 +362,8 @@ extension MVClient {
                         return
                 }
                 completionHandler(result: result, error: nil)
-            case .Failure:
-                let errorString = self.getErrorString(Error.Parser(.BadData))
+            case .Failure(let error):
+                let errorString = self.getErrorString(error)
                 completionHandler(result: nil, error: errorString)
             }
         }

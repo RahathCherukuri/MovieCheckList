@@ -96,9 +96,12 @@ extension MoviePickerViewController: UISearchBarDelegate {
                     self.movieTableView!.reloadData()
                 }
             } else if let err = error {
-                self.stopAndHideSpinner()
                 dispatch_async(dispatch_get_main_queue()) {
-                    self.showAlertView(err)
+                    self.stopAndHideSpinner()
+                    if (err != "cancelled") {
+                        self.showAlertView(err)
+                    }
+
                 }
                 print(err)
             }

@@ -95,8 +95,12 @@ extension WatchedListViewController: UITableViewDelegate, UITableViewDataSource 
         if ((movie.releaseYear) != nil) {
             cell.movieTitle.text = "\(movie.title) (\(movie.releaseYear!))"
         }
-        cell.movieTime.text = "Time: " + movie.getHoursAndMinutes(Float(movie.runTime!))
-        cell.movieGenre.text = movie.genres
+        if (movie.runTime != nil) {
+            cell.movieTime.text = "Time: " + movie.getHoursAndMinutes(Float(movie.runTime!))
+        }
+        if (movie.genres != nil) {
+            cell.movieGenre.text = movie.genres
+        }
         
         cell.moviePoster.image = UIImage(named: "Film")
         cell.moviePoster.contentMode = UIViewContentMode.ScaleAspectFit
@@ -109,7 +113,7 @@ extension WatchedListViewController: UITableViewDelegate, UITableViewDataSource 
             cell.moviePoster.image = localImage
             stopAndHideSpinner(cell)
         } else if movie.posterPath == nil || movie.posterPath == "" {
-            cell.moviePoster.image = UIImage(named: "noImage")
+            cell.moviePoster.image = UIImage(named: "Film")
             stopAndHideSpinner(cell)
         } else {
             if let posterPath = movie.posterPath {
