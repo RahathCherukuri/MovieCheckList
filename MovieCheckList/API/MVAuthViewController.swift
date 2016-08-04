@@ -24,8 +24,8 @@ class MVAuthViewController: UIViewController {
         
         webView.delegate = self
         
-        self.navigationItem.title = "TheMovieDB Auth"
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .Plain, target: self, action: #selector(MVAuthViewController.cancelAuth))
+        navigationItem.title = "TheMovieDB Auth"
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .Plain, target: self, action: #selector(MVAuthViewController.cancelAuth))
     }
     
     override func viewWillAppear(animated: Bool) {

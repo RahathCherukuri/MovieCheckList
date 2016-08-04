@@ -196,13 +196,7 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
             return [Movie]()
         }
     }
-    
-    func showAlertView(message: String) {
-        let alert = UIAlertController(title: nil, message: message, preferredStyle: UIAlertControllerStyle.Alert)
-        let dismiss = UIAlertAction (title: "OK", style: UIAlertActionStyle.Default, handler: nil)
-        alert.addAction(dismiss)
-        presentViewController(alert, animated: true, completion: nil)
-    }
+
 }
 
 extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
@@ -255,6 +249,10 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
                             cell.moviePoster!.image = image
                         }
                     } else {
+                        dispatch_async(dispatch_get_main_queue()) {
+                            self.stopAndHideSpinner(cell)
+                            self.showAlertView((error?.description)!)
+                        }
                         print(error)
                     }
                 })
