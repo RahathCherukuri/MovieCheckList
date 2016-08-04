@@ -503,6 +503,10 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Kn0-jm-If9">
                                 <rect key="frame" x="0.0" y="64" width="600" height="492"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <activityIndicatorView key="tableFooterView" hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" id="6ux-Gi-Dnv">
+                                    <rect key="frame" x="0.0" y="72" width="600" height="20"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                </activityIndicatorView>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="MovieSearchCell" id="6wg-ag-XCv">
                                         <rect key="frame" x="0.0" y="28" width="600" height="44"/>
@@ -554,6 +558,7 @@
                     <connections>
                         <outlet property="movieSearchBar" destination="BZE-8v-XZ2" id="f2P-xg-gTc"/>
                         <outlet property="movieTableView" destination="Kn0-jm-If9" id="HjX-FQ-xn9"/>
+                        <outlet property="spinner" destination="6ux-Gi-Dnv" id="dO5-MD-Cmn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0K9-vs-ES0" userLabel="First Responder" sceneMemberID="firstResponder"/>

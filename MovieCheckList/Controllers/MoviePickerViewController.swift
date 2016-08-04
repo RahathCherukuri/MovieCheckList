@@ -16,6 +16,7 @@ class MoviePickerViewController: UIViewController {
     
     @IBOutlet weak var movieSearchBar: UISearchBar!
     @IBOutlet weak var movieTableView: UITableView!
+    @IBOutlet weak var spinner: UIActivityIndicatorView!
 
     // The data for the table
     var movies = [Movie]()
@@ -31,6 +32,7 @@ class MoviePickerViewController: UIViewController {
     // MARK: Lifecycle
     
     override func viewDidLoad() {
+        stopAndHideSpinner()
         movieSearchBar.delegate = self
         
         /* Configure tap recognizer */
@@ -68,14 +70,18 @@ extension MoviePickerViewController: UISearchBarDelegate {
     /* Each time the search text changes we want to cancel any current download and start a new one */
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
         
+        spinner.hidden = false
+        spinner.startAnimating()
         /* Cancel the last task */
         if let task = searchTask {
+            stopAndHideSpinner()
             task.cancel()
         }
         
         /* If the text is empty we are done */
         if searchText == "" {
             movies = [Movie]()
+            stopAndHideSpinner()
             movieTableView?.reloadData()
             return
         }
@@ -85,9 +91,16 @@ extension MoviePickerViewController: UISearchBarDelegate {
             self.searchTask = nil
             if let movies = movies {
                 self.movies = movies
+                self.stopAndHideSpinner()
                 dispatch_async(dispatch_get_main_queue()) {
                     self.movieTableView!.reloadData()
                 }
+            } else if let err = error {
+                self.stopAndHideSpinner()
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.showAlertView(err)
+                }
+                print(err)
             }
         })
     }
@@ -96,11 +109,9 @@ extension MoviePickerViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
     }
     
-    func showAlertView(message: String) {
-        let alert = UIAlertController(title: nil, message: message, preferredStyle: UIAlertControllerStyle.Alert)
-        let dismiss = UIAlertAction (title: "OK", style: UIAlertActionStyle.Default, handler: nil)
-        alert.addAction(dismiss)
-        presentViewController(alert, animated: true, completion: nil)
+    func stopAndHideSpinner() {
+        spinner.stopAnimating()
+        spinner.hidden = true
     }
 }
 
@@ -159,6 +170,9 @@ extension MoviePickerViewController: UITableViewDelegate, UITableViewDataSource 
         if (!movieAlreadySaved) {
             MVClient.sharedInstance.postToWatchlist(movie, watchlist: true) { status_code, error in
                 if let err = error {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.showAlertView(err)
+                    }
                     print(err)
                 } else {
                     if status_code == 1 || status_code == 12 {
