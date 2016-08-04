@@ -282,7 +282,6 @@ extension MVClient {
     }
 
     
-//    https://api.themoviedb.org/3/movie/256924?api_key=260bdeaf6536281935bb16ea222e85ff
     func getMovieInfo(movieId: Int, completionHandler: Result<AnyObject, Error> -> Void) {
         /* 1. Specify parameters, method (if has {key}), and HTTP body (if POST) */
         let parameters: [String : AnyObject] = [: ]
@@ -302,20 +301,6 @@ extension MVClient {
                 completionHandler(dataResult)
             }
         }
-    }
-    
-    //http://api.themoviedb.org/3/movie/256924/credits?api_key=260bdeaf6536281935bb16ea222e85ff
-    func getMovieCredits() {
-        /* 1. Specify parameters, method (if has {key}), and HTTP body (if POST) */
-        let parameters: [String : AnyObject] = [: ]
-        let movieid: String = "256924"
-        var mutableMethod : String = Methods.MovieCredits
-        mutableMethod = MVClient.substituteKeyInMethod(mutableMethod, key: MVClient.URLKeys.UserID, value: movieid)!
-        
-        taskForGETMethod(mutableMethod, parameters: parameters) { dataResult in
-            print(dataResult)
-        }
-
     }
     
     func postToWatchlist(movie: Movie, watchlist: Bool, completionHandler: (result: Int?, error: String?) -> Void) {
@@ -383,22 +368,6 @@ extension MVClient {
             }
         }
     }
-
-    
-    // MARK: Helper Functions
-    
-//    func convertResultObject(result: Result<AnyObject, Error>) -> (success: Bool, errorString: String) {
-//        switch result {
-//        case .Failure(let error):
-//            switch error {
-//                case .Network(let errorString):
-//                    return (success: false, errorString: errorString)
-//                case .Parser(let errorString):
-//                    return (success: false, errorString: errorString.rawValue)
-//            }
-//        case .Success(<#T##T#>)
-//        }
-//    }
     
     func getErrorString(error: Error) -> String {
         switch error {
@@ -408,23 +377,4 @@ extension MVClient {
             return errorString.rawValue
         }
     }
-    
-    
-    
-    
-//    // MARK: Helper Functions
-//    func getErrorSString(result: Result<AnyObject, Error>, completionHandler: (success: Bool, errorString: String?) -> Void) {
-//        switch result {
-//        case .Failure(let error):
-//            switch error {
-//                case .Network(let errorString):
-//                    completionHandler(success: false, errorString: errorString)
-//                case .Parser(let errorString):
-//                    completionHandler(success: false, errorString: errorString.rawValue)
-//            }
-//        default:
-//            return completionHandler(success: false, errorString: "Bad Data")
-//        }
-//    }
-
 }

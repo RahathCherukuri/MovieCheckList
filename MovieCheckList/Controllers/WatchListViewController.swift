@@ -21,10 +21,8 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
         setUpUI()
         let movies = MVClient.sharedInstance.fetchMovies(false)
         if (!movies.isEmpty) {
-            print("array in WatchListViewController")
             watchMoviesList = movies
         } else {
-            print("Network Call for getWatchlistMovies")
             MVClient.sharedInstance.getWatchlistMovies() {(success, errorString, movies) in
                 if success {
                     self.watchMoviesList = movies!
@@ -54,7 +52,6 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     func loadWatchedListMovies() {
         let watchedMovies = MVClient.sharedInstance.fetchMovies(true)
         if watchedMovies.isEmpty {
-            print("Network Call for getFavoriteMovies")
             MVClient.sharedInstance.getFavoriteMovies() {(success, errorString, movies) in
             }
         }
@@ -78,11 +75,11 @@ class WatchListViewController: UIViewController, MoviePickerViewControllerDelega
     // MARK: - Actions
     
     func addActor() {
-        let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MoviePickerViewController") as! MoviePickerViewController
+        let controller = storyboard!.instantiateViewControllerWithIdentifier("MoviePickerViewController") as! MoviePickerViewController
         
         controller.delegate = self
         
-        self.presentViewController(controller, animated: true, completion: nil)
+        presentViewController(controller, animated: true, completion: nil)
     }
     
     // MARK: - Actor Picker Delegate
@@ -284,9 +281,9 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         /* Push the movie detail view */
-        let controller = self.storyboard!.instantiateViewControllerWithIdentifier("MovieDetailViewController") as! MovieDetailViewController
+        let controller = storyboard!.instantiateViewControllerWithIdentifier("MovieDetailViewController") as! MovieDetailViewController
         controller.movie = watchMoviesList[indexPath.row]
-        self.navigationController!.pushViewController(controller, animated: true)
+        navigationController!.pushViewController(controller, animated: true)
     }
     
 }
