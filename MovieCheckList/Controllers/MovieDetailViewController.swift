@@ -28,7 +28,7 @@ class MovieDetailViewController: UIViewController {
         super.viewDidLoad()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         if let movie = movie {
@@ -52,7 +52,7 @@ class MovieDetailViewController: UIViewController {
             
             var posterSizes = ["w92", "w154", "w185", "w342", "w500", "w780", "original"]
             
-            spinner.hidden = false
+            spinner.isHidden = false
             spinner.startAnimating()
             
             if let localImage = movie.detailImage {
@@ -66,13 +66,13 @@ class MovieDetailViewController: UIViewController {
                     MVClient.sharedInstance.taskForGETImage(posterSizes[5], filePath: posterPath, completionHandler: { (imageData, error) in
                         if let image = UIImage(data: imageData!) {
                             movie.detailImage = image
-                            dispatch_async(dispatch_get_main_queue()) {
+                            DispatchQueue.main.async {
                                 self.posterImage.image = image
                                 self.stopAndHideSpinner()
                             }
                         } else {
                             print(error)
-                            dispatch_async(dispatch_get_main_queue()) {
+                            DispatchQueue.main.async {
                                 self.showAlertView((error?.description)!)
                                 self.stopAndHideSpinner()
                             }
@@ -85,6 +85,6 @@ class MovieDetailViewController: UIViewController {
     
     func stopAndHideSpinner() {
         spinner.stopAnimating()
-        spinner.hidden = true
+        spinner.isHidden = true
     }
 }

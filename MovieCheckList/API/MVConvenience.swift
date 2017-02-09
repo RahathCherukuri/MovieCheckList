@@ -12,72 +12,72 @@ import CoreData
 
 extension MVClient {
     
-    func authenticateWithViewController(hostViewController: UIViewController, completionHandler: (success: Bool, errorString: String?) -> Void) {
+    func authenticateWithViewController(_ hostViewController: UIViewController, completionHandler: @escaping (_ success: Bool, _ errorString: String?) -> Void) {
         self.getRequestToken() { dataResult in
             switch dataResult {
-            case .Success(let requestToken):
+            case .success(let requestToken):
                 print("requestToken: \(requestToken)")
                 self.loginWithToken(requestToken as? String, hostViewController: hostViewController) {(success, errorString) in
                     if success {
                         print("success")
                         self.getSessionID((requestToken as? String)!) { dataResult in
                             switch dataResult {
-                            case .Success(let sessionID):
+                            case .success(let sessionID):
                                 self.sessionID = sessionID as? String
-                                NSUserDefaults.standardUserDefaults().setValue(self.sessionID, forKey: MVClient.UserDefaults.SessionID)
+                                Foundation.UserDefaults.standard.setValue(self.sessionID, forKey: MVClient.UserDefaults.SessionID)
                                 print("sessionID: \(self.sessionID)")
                                 self.getUserID(self.sessionID!) { dataResult in
                                     switch dataResult {
-                                    case .Success(let id):
+                                    case .success(let id):
                                         self.userID = id as? Int
-                                        NSUserDefaults.standardUserDefaults().setInteger(self.userID!, forKey: MVClient.UserDefaults.UserID)
+                                        Foundation.UserDefaults.standard.set(self.userID!, forKey: MVClient.UserDefaults.UserID)
                                         print("UserID: \(self.userID)")
-                                        completionHandler(success: true, errorString: nil)
-                                    case .Failure(let error):
-                                        completionHandler(success: false, errorString: self.getErrorString(error))
+                                        completionHandler(true, nil)
+                                    case .failure(let error):
+                                        completionHandler(false, self.getErrorString(error))
                                     }
                                 }
-                            case .Failure(let error):
-                                completionHandler(success: false, errorString: self.getErrorString(error))
+                            case .failure(let error):
+                                completionHandler(false, self.getErrorString(error))
                             }
                         }
                     } else {
-                        completionHandler(success: false, errorString: errorString)
+                        completionHandler(false, errorString)
                     }
                 }
-            case .Failure(let error):
-                completionHandler(success: false, errorString: self.getErrorString(error))
+            case .failure(let error):
+                completionHandler(false, self.getErrorString(error))
             }
         }
     }
     
     // Gets the RequestToken
-    func getRequestToken(completionHandler: Result<AnyObject, Error> -> Void) {
+    func getRequestToken(_ completionHandler: @escaping (Result<AnyObject, Error>) -> Void) {
         let method = Methods.AuthenticationTokenNew
         let parameters: [String : AnyObject] = [ : ]
         
         taskForGETMethod(method, parameters: parameters) { dataResult in
             switch dataResult {
-            case .Success(let result):
+            case .success(let result):
                 guard let dic: [String: AnyObject] = result as? [String: AnyObject],
-                    requestToken = dic[MVClient.JSONResponseKeys.RequestToken] as? String
+                    let requestToken = dic[MVClient.JSONResponseKeys.RequestToken] as? String
                 else {
-                    completionHandler(.Failure(.Parser(.BadData)))
+                    completionHandler(.failure(E: .parser(.BadData)))
                     return
                 }
-                completionHandler(.Success(requestToken))
-            case .Failure:
+                completionHandler(.success(T: requestToken as AnyObject))
+            case .failure:
                 completionHandler(dataResult)
             }
         }
     }
     
     /* This function opens a MVAuthViewController to handle Step 2a of the auth flow */
-    func loginWithToken(requestToken: String?, hostViewController: UIViewController, completionHandler: (success: Bool, errorString: String?) -> Void) {
-        let authorizationURL = NSURL(string: "\(MVClient.Constants.AuthorizationURL)\(requestToken!)")
-        let request = NSURLRequest(URL: authorizationURL!)
+    func loginWithToken(_ requestToken: String?, hostViewController: UIViewController, completionHandler: @escaping (_ success: Bool, _ errorString: String?) -> Void) {
+        let authorizationURL = URL(string: "\(MVClient.Constants.AuthorizationURL)\(requestToken!)")
+        let request = URLRequest(url: authorizationURL!)
         
-        let webAuthViewController = hostViewController.storyboard!.instantiateViewControllerWithIdentifier("MVAuthViewController") as! MVAuthViewController
+        let webAuthViewController = hostViewController.storyboard!.instantiateViewController(withIdentifier: "MVAuthViewController") as! MVAuthViewController
         webAuthViewController.urlRequest = request
         webAuthViewController.requestToken = requestToken
         webAuthViewController.completionHandler = completionHandler
@@ -85,106 +85,106 @@ extension MVClient {
         let webAuthNavigationController = UINavigationController()
         webAuthNavigationController.pushViewController(webAuthViewController, animated: false)
         
-        dispatch_async(dispatch_get_main_queue(), {
-            hostViewController.presentViewController(webAuthNavigationController, animated: true, completion: nil)
+        DispatchQueue.main.async(execute: {
+            hostViewController.present(webAuthNavigationController, animated: true, completion: nil)
         })
     }
     
     // Gets the sessionID
-    func getSessionID(requestToken: String, completionHandler: Result<AnyObject, Error> -> Void) {
+    func getSessionID(_ requestToken: String, completionHandler: @escaping (Result<AnyObject, Error>) -> Void) {
         let method: String = Methods.AuthenticationSessionNew
-        let parameters: [String : AnyObject] = [ParameterKeys.RequestToken: requestToken]
+        let parameters: [String : AnyObject] = [ParameterKeys.RequestToken: requestToken as AnyObject]
         
         taskForGETMethod(method, parameters: parameters) { dataResult in
             switch dataResult {
-            case .Success(let result):
+            case .success(let result):
                 guard let dic: [String: AnyObject] = result as? [String: AnyObject],
-                    sessionID = dic[MVClient.JSONResponseKeys.SessionID] as? String
+                    let sessionID = dic[MVClient.JSONResponseKeys.SessionID] as? String
                     else {
-                        completionHandler(.Failure(.Parser(.BadData)))
+                        completionHandler(.failure(E: .parser(.BadData)))
                         return
                 }
-                completionHandler(.Success(sessionID))
-            case .Failure:
+                completionHandler(.success(T: sessionID as AnyObject))
+            case .failure:
                 completionHandler(dataResult)
             }
         }
     }
     
     //Gets the UserID
-    func getUserID(session_id: String, completionHandler: Result<AnyObject, Error> -> Void) {
+    func getUserID(_ session_id: String, completionHandler: @escaping (Result<AnyObject, Error>) -> Void) {
         let method: String = Methods.Account
-        let parameters: [String: AnyObject] = [ParameterKeys.SessionID:session_id]
+        let parameters: [String: AnyObject] = [ParameterKeys.SessionID:session_id as AnyObject]
         
         taskForGETMethod(method, parameters: parameters) { dataResult in
             switch dataResult {
-            case .Success(let result):
+            case .success(let result):
                 guard let dic: [String: AnyObject] = result as? [String: AnyObject],
-                    userID = dic[MVClient.JSONResponseKeys.UserID] as? Int
+                    let userID = dic[MVClient.JSONResponseKeys.UserID] as? Int
                     else {
-                        completionHandler(.Failure(.Parser(.BadData)))
+                        completionHandler(.failure(E: .parser(.BadData)))
                         return
                 }
-                completionHandler(.Success(userID))
-            case .Failure:
+                completionHandler(.success(T: userID as AnyObject))
+            case .failure:
                 completionHandler(dataResult)
             }
         }
     }
     
     //Get the watchlist, iterate through the list and get each movie information
-    func getWatchlistMovies(completionHandler: (success: Bool, errorString: String?, movies: [Movie]?) -> Void) {
+    func getWatchlistMovies(_ completionHandler: @escaping (_ success: Bool, _ errorString: String?, _ movies: [Movie]?) -> Void) {
         
         /* 1. Specify parameters, method (if has {key}), and HTTP body (if POST) */
         let parameters = [MVClient.ParameterKeys.SessionID: MVClient.sharedInstance.sessionID!]
         var mutableMethod : String = Methods.AccountIDWatchlistMovies
         mutableMethod = MVClient.substituteKeyInMethod(mutableMethod, key: MVClient.URLKeys.UserID, value: String(MVClient.sharedInstance.userID!))!
         
-        taskForGETMethod(mutableMethod, parameters: parameters) {dataResult in
+        taskForGETMethod(mutableMethod, parameters: parameters as [String : AnyObject]) {dataResult in
             switch dataResult {
-            case .Success(let result):
+            case .success(let result):
                 guard let dic: [String: AnyObject] = result as? [String: AnyObject],
-                    watchMovieResults = dic[MVClient.JSONResponseKeys.MovieResults] as? [[String: AnyObject]]
+                    let watchMovieResults = dic[MVClient.JSONResponseKeys.MovieResults] as? [[String: AnyObject]]
                     else {
-                        let errorString = self.getErrorString(Error.Parser(.BadData))
-                        completionHandler(success: false, errorString: errorString, movies: nil)
+                        let errorString = self.getErrorString(AppError.parser(.BadData))
+                        completionHandler(false, errorString, nil)
                         return
                 }
                 
-                let myGroup = dispatch_group_create()
+                let myGroup = DispatchGroup()
                 _ = watchMovieResults.map({
                     guard let id = $0[MVClient.JSONResponseKeys.UserID] as? Int else {
                         return
                     }
-                    dispatch_group_enter(myGroup)
+                    myGroup.enter()
                     self.getMovieInfo(id) {dataResult in
                         switch dataResult {
-                        case .Success(let mov):
+                        case .success(let mov):
                             var movieDictionary: [String: AnyObject] = mov as! [String : AnyObject]
-                            movieDictionary[MVClient.JSONResponseKeys.MovieWatched] = false
+                            movieDictionary[MVClient.JSONResponseKeys.MovieWatched] = false as AnyObject?
                             _ = Movie(dictionary: movieDictionary, context: MVClient.sharedInstance.sharedContext)
-                            dispatch_group_leave(myGroup)
-                        case .Failure(let error):
+                            myGroup.leave()
+                        case .failure(let error):
                             let errorString = self.getErrorString(error)
-                            completionHandler(success: false, errorString: errorString, movies: nil)
+                            completionHandler(false, errorString, nil)
                         }
                     }
                 })
-                dispatch_group_notify(myGroup, dispatch_get_main_queue(), {
+                myGroup.notify(queue: DispatchQueue.main, execute: {
                     MVClient.sharedInstance.saveContext()
                     let toWatchMovies = self.fetchMovies(false)
-                    completionHandler(success: true, errorString: nil, movies: toWatchMovies)
+                    completionHandler(true, nil, toWatchMovies)
                 })
-            case .Failure(let error):
+            case .failure(let error):
                 let errorString = self.getErrorString(error)
-                completionHandler(success: false, errorString: errorString, movies: nil)
+                completionHandler(false, errorString, nil)
             }
         }
     }
 
     
     //Get the FavouriteList, iterate through the list and get each movie information
-    func getFavoriteMovies(completionHandler: (success: Bool, errorString: String?, movies: [Movie]?) -> Void) {
+    func getFavoriteMovies(_ completionHandler: @escaping (_ success: Bool, _ errorString: String?, _ movies: [Movie]?) -> Void) {
         
         /* 1. Specify parameters, method (if has {key}), and HTTP body (if POST) */
         let parameters = [MVClient.ParameterKeys.SessionID: MVClient.sharedInstance.sessionID!]
@@ -192,63 +192,63 @@ extension MVClient {
         mutableMethod = MVClient.substituteKeyInMethod(mutableMethod, key: MVClient.URLKeys.UserID, value: String(MVClient.sharedInstance.userID!))!
         
         /* 2. Make the request */
-        taskForGETMethod(mutableMethod, parameters: parameters) { dataresult in
+        taskForGETMethod(mutableMethod, parameters: parameters as [String : AnyObject]) { dataresult in
             switch dataresult {
-            case .Success(let result):
+            case .success(let result):
                 guard let dic: [String: AnyObject] = result as? [String: AnyObject],
-                    watchMovieResults = dic[MVClient.JSONResponseKeys.MovieResults] as? [[String: AnyObject]]
+                    let watchMovieResults = dic[MVClient.JSONResponseKeys.MovieResults] as? [[String: AnyObject]]
                     else {
-                        let errorString = self.getErrorString(Error.Parser(.BadData))
-                        completionHandler(success: false, errorString: errorString, movies: nil)
+                        let errorString = self.getErrorString(AppError.parser(.BadData))
+                        completionHandler(false, errorString, nil)
                         return
                 }
-                let myGroup = dispatch_group_create()
+                let myGroup = DispatchGroup()
                 _ = watchMovieResults.map({
                     guard let id = $0[MVClient.JSONResponseKeys.UserID] as? Int else {
                         return
                     }
-                    dispatch_group_enter(myGroup)
+                    myGroup.enter()
 
                     self.getMovieInfo(id) {dataResult in
                         switch dataResult {
-                        case .Success(let mov):
+                        case .success(let mov):
                             var movieDictionary: [String: AnyObject] = mov as! [String : AnyObject]
-                            movieDictionary[MVClient.JSONResponseKeys.MovieWatched] = true
+                            movieDictionary[MVClient.JSONResponseKeys.MovieWatched] = true as AnyObject?
                             _ = Movie(dictionary: movieDictionary, context: MVClient.sharedInstance.sharedContext)
-                            dispatch_group_leave(myGroup)
-                        case .Failure(let error):
+                            myGroup.leave()
+                        case .failure(let error):
                             let errorString = self.getErrorString(error)
-                            completionHandler(success: false, errorString: errorString, movies: nil)
+                            completionHandler(false, errorString, nil)
                         }
                     }
                 })
-                dispatch_group_notify(myGroup, dispatch_get_main_queue(), {
+                myGroup.notify(queue: DispatchQueue.main, execute: {
                     MVClient.sharedInstance.saveContext()
                     let watchListMovies = self.fetchMovies(true)
-                    completionHandler(success: true, errorString: nil, movies: watchListMovies)
+                    completionHandler(true, nil, watchListMovies)
                 })
-            case .Failure(let error):
+            case .failure(let error):
                 let errorString = self.getErrorString(error)
-                completionHandler(success: false, errorString: errorString, movies: nil)
+                completionHandler(false, errorString, nil)
             }
         }
     }
     
     // Get movies with the search string
-    func getMoviesForSearchString(searchString: String, completionHandler: (result: [Movie]?, error: String?) -> Void) -> NSURLSessionDataTask? {
+    func getMoviesForSearchString(_ searchString: String, completionHandler: @escaping (_ result: [Movie]?, _ error: String?) -> Void) -> URLSessionDataTask? {
         
         /* 1. Specify parameters, method (if has {key}), and HTTP body (if POST) */
         let parameters = [MVClient.ParameterKeys.Query: searchString]
         
         /* 2. Make the request */
-        let task = taskForGETMethod(Methods.SearchMovie, parameters: parameters) { dataResult in
+        let task = taskForGETMethod(Methods.SearchMovie, parameters: parameters as [String : AnyObject]) { dataResult in
             switch dataResult {
-                case .Success(let result):
+                case .success(let result):
                     guard let dic: [String: AnyObject] = result as? [String: AnyObject],
-                        movieResults = dic[MVClient.JSONResponseKeys.MovieResults] as? [[String: AnyObject]]
+                        let movieResults = dic[MVClient.JSONResponseKeys.MovieResults] as? [[String: AnyObject]]
                         else {
-                            let errorString = self.getErrorString(Error.Parser(.BadData))
-                            completionHandler(result: nil, error: errorString)
+                            let errorString = self.getErrorString(AppError.parser(.BadData))
+                            completionHandler(nil, errorString)
                             return
                     }
                     var movies: [Movie] = []
@@ -256,33 +256,33 @@ extension MVClient {
                         let movie = Movie(dictionary: $0, context: MVClient.sharedInstance.scratchContext)
                         movies.append(movie)
                     })
-                    completionHandler(result: movies, error: nil)
+                    completionHandler(movies, nil)
                 
-                case .Failure(let error):
+                case .failure(let error):
                     let errorString = self.getErrorString(error)
-                    completionHandler(result: nil, error: errorString)
+                    completionHandler(nil, errorString)
             }
         }
         return task
     }
     
-    func fetchMovies(watched: Bool) -> [Movie] {
+    func fetchMovies(_ watched: Bool) -> [Movie] {
         
         // Create the Fetch Request
-        let fetchRequest = NSFetchRequest(entityName: "Movie")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Movie")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key:"id", ascending: true)]
-        fetchRequest.predicate = NSPredicate(format: "watched == %@", watched);
+        fetchRequest.predicate = NSPredicate(format: "watched == %@", watched as CVarArg);
         
         // Execute the Fetch Request
         do {
-            return try sharedContext.executeFetchRequest(fetchRequest) as! [Movie]
+            return try sharedContext.fetch(fetchRequest) as! [Movie]
         } catch _ {
             return [Movie]()
         }
     }
 
     
-    func getMovieInfo(movieId: Int, completionHandler: Result<AnyObject, Error> -> Void) {
+    func getMovieInfo(_ movieId: Int, completionHandler: @escaping (Result<AnyObject, Error>) -> Void) {
         /* 1. Specify parameters, method (if has {key}), and HTTP body (if POST) */
         let parameters: [String : AnyObject] = [: ]
         var mutableMethod : String = Methods.MovieInfo
@@ -290,20 +290,20 @@ extension MVClient {
         mutableMethod = MVClient.substituteKeyInMethod(mutableMethod, key: MVClient.URLKeys.UserID, value: movieIDString)!
         taskForGETMethod(mutableMethod, parameters: parameters) { dataResult in
             switch dataResult {
-            case .Success(let mov):
+            case .success(let mov):
                 guard let movieDictionary: [String: AnyObject] = mov as? [String: AnyObject]
                     else {
-                        completionHandler(.Failure(.Parser(.BadData)))
+                        completionHandler(.failure(E: .parser(.BadData)))
                         return
                 }
-                completionHandler(.Success(movieDictionary))
-            case .Failure:
+                completionHandler(.success(T: movieDictionary as AnyObject))
+            case .failure:
                 completionHandler(dataResult)
             }
         }
     }
     
-    func postToWatchlist(movie: Movie, watchlist: Bool, completionHandler: (result: Int?, error: String?) -> Void) {
+    func postToWatchlist(_ movie: Movie, watchlist: Bool, completionHandler: @escaping (_ result: Int?, _ error: String?) -> Void) {
         
         /* 1. Specify parameters, method (if has {key}), and HTTP body (if POST) */
         let parameters = [MVClient.ParameterKeys.SessionID : MVClient.sharedInstance.sessionID!]
@@ -311,25 +311,25 @@ extension MVClient {
         var mutableMethod : String = Methods.AccountIDWatchlist
         mutableMethod = MVClient.substituteKeyInMethod(mutableMethod, key: MVClient.URLKeys.UserID, value: String(MVClient.sharedInstance.userID!))!
         let jsonBody : [String:AnyObject] = [
-            MVClient.JSONBodyKeys.MediaType: "movie",
-            MVClient.JSONBodyKeys.MediaID: movie.id as Int,
-            MVClient.JSONBodyKeys.Watchlist: watchlist as Bool
+            MVClient.JSONBodyKeys.MediaType: "movie" as AnyObject,
+            MVClient.JSONBodyKeys.MediaID: movie.id as NSNumber,
+            MVClient.JSONBodyKeys.Watchlist: watchlist as Bool as AnyObject
         ]
         
         /* 2. Make the request */
-        taskForPOSTMethod(mutableMethod, parameters: parameters, jsonBody: jsonBody) { dataResult in
+        taskForPOSTMethod(mutableMethod, parameters: parameters as [String : AnyObject], jsonBody: jsonBody) { dataResult in
             switch dataResult {
-            case .Success(let res):
+            case .success(let res):
                 guard let result = res[MVClient.JSONResponseKeys.StatusCode] as? Int
                     else {
-                        let errorString = self.getErrorString(Error.Parser(.BadData))
-                        completionHandler(result: nil, error: errorString)
+                        let errorString = self.getErrorString(AppError.parser(.BadData))
+                        completionHandler(nil, errorString)
                         return
                 }
-                completionHandler(result: result, error: nil)
-            case .Failure(let error):
+                completionHandler(result, nil)
+            case .failure(let error):
                 let errorString = self.getErrorString(error)
-                completionHandler(result: nil, error: errorString)
+                completionHandler(nil, errorString)
             }
         }
     }
@@ -337,7 +337,7 @@ extension MVClient {
     
     // MARK: POST Convenience Methods
     
-    func postToFavorites(movie: Movie, favorite: Bool, completionHandler: (result: Int?, error: String?) -> Void)  {
+    func postToFavorites(_ movie: Movie, favorite: Bool, completionHandler: @escaping (_ result: Int?, _ error: String?) -> Void)  {
         
         /* 1. Specify parameters, method (if has {key}), and HTTP body (if POST) */
         let parameters = [MVClient.ParameterKeys.SessionID : MVClient.sharedInstance.sessionID!]
@@ -346,34 +346,34 @@ extension MVClient {
         mutableMethod = MVClient.substituteKeyInMethod(mutableMethod, key: MVClient.URLKeys.UserID, value: String(MVClient.sharedInstance.userID!))!
         
         let jsonBody : [String:AnyObject] = [
-            MVClient.JSONBodyKeys.MediaType: "movie",
-            MVClient.JSONBodyKeys.MediaID: movie.id as Int,
-            MVClient.JSONBodyKeys.Favorite: favorite as Bool
+            MVClient.JSONBodyKeys.MediaType: "movie" as AnyObject,
+            MVClient.JSONBodyKeys.MediaID: movie.id as NSNumber,
+            MVClient.JSONBodyKeys.Favorite: favorite as Bool as AnyObject
         ]
         
         /* 2. Make the request */
-        taskForPOSTMethod(mutableMethod, parameters: parameters, jsonBody: jsonBody) { dataResult in
+        taskForPOSTMethod(mutableMethod, parameters: parameters as [String : AnyObject], jsonBody: jsonBody) { dataResult in
             switch dataResult {
-            case .Success(let res):
+            case .success(let res):
                 guard let result = res[MVClient.JSONResponseKeys.StatusCode] as? Int
                     else {
-                        let errorString = self.getErrorString(Error.Parser(.BadData))
-                        completionHandler(result: nil, error: errorString)
+                        let errorString = self.getErrorString(AppError.parser(.BadData))
+                        completionHandler(nil, errorString)
                         return
                 }
-                completionHandler(result: result, error: nil)
-            case .Failure(let error):
+                completionHandler(result, nil)
+            case .failure(let error):
                 let errorString = self.getErrorString(error)
-                completionHandler(result: nil, error: errorString)
+                completionHandler(nil, errorString)
             }
         }
     }
     
-    func getErrorString(error: Error) -> String {
+    func getErrorString(_ error: AppError) -> String {
         switch error {
-        case .Network(let errorString):
+        case .network(let errorString):
             return errorString
-        case .Parser(let errorString):
+        case .parser(let errorString):
             return errorString.rawValue
         }
     }

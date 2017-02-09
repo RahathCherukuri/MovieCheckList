@@ -17,18 +17,18 @@ class LoginViewController: UIViewController {
         getUserAndSessionID()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         authenticateMovieDB.layer.cornerRadius = 10
         authenticateMovieDB.clipsToBounds = true
     }
     
-    @IBAction func login(sender: UIButton) {
+    @IBAction func login(_ sender: UIButton) {
         MVClient.sharedInstance.authenticateWithViewController(self) { (success, errorString) in
             if success {
                 self.completeLogin()
             } else {
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     self.showAlertView(errorString!)
                 }
                 self.displayError(errorString)
@@ -37,10 +37,10 @@ class LoginViewController: UIViewController {
     }
     
     func getUserAndSessionID() {
-        guard let sessionID = NSUserDefaults.standardUserDefaults().stringForKey(MVClient.UserDefaults.SessionID) else {
+        guard let sessionID = UserDefaults.standard.string(forKey: MVClient.UserDefaults.SessionID) else {
             return
         }
-        let userID = NSUserDefaults.standardUserDefaults().integerForKey(MVClient.UserDefaults.UserID)
+        let userID = UserDefaults.standard.integer(forKey: MVClient.UserDefaults.UserID)
         
         if (userID != 0) {
             MVClient.sharedInstance.userID = userID
@@ -50,24 +50,24 @@ class LoginViewController: UIViewController {
     }
     
     func completeLogin() {
-        dispatch_async(dispatch_get_main_queue(), {
-            let controller = self.storyboard!.instantiateViewControllerWithIdentifier("ManagerNavigationController") as! UINavigationController
-            self.presentViewController(controller, animated: true, completion: nil)
+        DispatchQueue.main.async(execute: {
+            let controller = self.storyboard!.instantiateViewController(withIdentifier: "ManagerNavigationController") as! UINavigationController
+            self.present(controller, animated: true, completion: nil)
         })
     }
     
-    func displayError(errorString: String?) {
+    func displayError(_ errorString: String?) {
         print("errorString: \(errorString)")
     }
     
 }
 
 extension UIViewController {
-    func showAlertView(message: String) {
-        let alert = UIAlertController(title: nil, message: message, preferredStyle: UIAlertControllerStyle.Alert)
-        let dismiss = UIAlertAction (title: "OK", style: UIAlertActionStyle.Default, handler: nil)
+    func showAlertView(_ message: String) {
+        let alert = UIAlertController(title: nil, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        let dismiss = UIAlertAction (title: "OK", style: UIAlertActionStyle.default, handler: nil)
         alert.addAction(dismiss)
-        presentViewController(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
     }
 }
 
