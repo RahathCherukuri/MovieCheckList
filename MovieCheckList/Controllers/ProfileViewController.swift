@@ -25,7 +25,7 @@ class ProfileViewController: UIViewController {
         signOutButton.clipsToBounds = true
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         greetings.text = "Greetings "
         let toWatchMovies = MVClient.sharedInstance.fetchMovies(false)
@@ -36,26 +36,26 @@ class ProfileViewController: UIViewController {
         setLabel(watchedMoviesCount)
     }
     
-    @IBAction func signOut(sender: UIButton) {
+    @IBAction func signOut(_ sender: UIButton) {
         clearCoreData("Movie")
         setNilValuesForUserDefaults()
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
     
     func setNilValuesForUserDefaults() {
         let sessionID : String? = nil
         let userID : Int = 0
-        NSUserDefaults.standardUserDefaults().setValue(sessionID, forKey: MVClient.UserDefaults.SessionID)
-        NSUserDefaults.standardUserDefaults().setInteger(userID, forKey: MVClient.UserDefaults.UserID)
+        UserDefaults.standard.setValue(sessionID, forKey: MVClient.UserDefaults.SessionID)
+        UserDefaults.standard.set(userID, forKey: MVClient.UserDefaults.UserID)
     }
     
-    func clearCoreData(entity:String) {
-        let fetchRequest = NSFetchRequest(entityName: entity)
+    func clearCoreData(_ entity:String) {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
         fetchRequest.includesPropertyValues = false
         do {
-            if let results = try MVClient.sharedInstance.sharedContext.executeFetchRequest(fetchRequest) as? [NSManagedObject] {
+            if let results = try MVClient.sharedInstance.sharedContext.fetch(fetchRequest) as? [NSManagedObject] {
                 for result in results {
-                    MVClient.sharedInstance.sharedContext.deleteObject(result)
+                    MVClient.sharedInstance.sharedContext.delete(result)
                 }
                 
                 MVClient.sharedInstance.saveContext()
@@ -66,15 +66,15 @@ class ProfileViewController: UIViewController {
     }
 
     
-    func setLabel(label: UILabel) {
+    func setLabel(_ label: UILabel) {
         let size:CGFloat = 60.0
-        label.textColor = .greenColor()
-        label.textAlignment = .Center
-        label.font = UIFont.systemFontOfSize(20.0)
-        label.bounds = CGRectMake(0.0, 0.0, size, size)
+        label.textColor = .green
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 20.0)
+        label.bounds = CGRect(x: 0.0, y: 0.0, width: size, height: size)
         label.layer.cornerRadius = size / 2
         label.layer.borderWidth = 3.0
-        label.layer.backgroundColor = UIColor.clearColor().CGColor
-        label.layer.borderColor = UIColor.greenColor().CGColor
+        label.layer.backgroundColor = UIColor.clear.cgColor
+        label.layer.borderColor = UIColor.green.cgColor
     }
 }

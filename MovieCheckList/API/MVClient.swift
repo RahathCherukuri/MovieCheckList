@@ -15,7 +15,7 @@ final class MVClient: NSObject {
     static let sharedInstance = MVClient()
     
     /* Shared session */
-    var session: NSURLSession
+    var session: URLSession
     
     /* Authentication state */
     var sessionID : String? = nil
@@ -26,7 +26,7 @@ final class MVClient: NSObject {
     }()
     
     lazy var scratchContext: NSManagedObjectContext = {
-        var context = NSManagedObjectContext()
+        var context = NSManagedObjectContext.init(concurrencyType: .mainQueueConcurrencyType)
         context.persistentStoreCoordinator =  CoreDataStackManager.sharedInstance().persistentStoreCoordinator
         return context
     }()
@@ -38,24 +38,24 @@ final class MVClient: NSObject {
     // MARK: Initializers
     
     override init() {
-        session = NSURLSession.sharedSession()
+        session = URLSession.shared
         super.init()
     }
     
     // MARK: GET Image
     
-    func taskForGETImage(size: String, filePath: String, completionHandler: (imageData: NSData?, error: NSError?) ->  Void) -> NSURLSessionTask {
+    func taskForGETImage(_ size: String, filePath: String, completionHandler: @escaping (_ imageData: Data?, _ error: NSError?) ->  Void) -> URLSessionTask {
         
         /* 1. Set the parameters */
         // There are none...
         
         /* 2/3. Build the URL and configure the request */
-        let baseURL = NSURL(string: MVClient.Constants.baseImageURLString)!
-        let url = baseURL.URLByAppendingPathComponent(size).URLByAppendingPathComponent(filePath)
-        let request = NSURLRequest(URL: url)
+        let baseURL = URL(string: MVClient.Constants.baseImageURLString)!
+        let url = baseURL.appendingPathComponent(size).appendingPathComponent(filePath)
+        let request = URLRequest(url: url)
         
         /* 4. Make the request */
-        let task = session.dataTaskWithRequest(request) { (data, response, error) in
+        let task = session.dataTask(with: request, completionHandler: { (data, response, error) in
             
             /* GUARD: Was there an error? */
             guard (error == nil) else {
@@ -64,8 +64,8 @@ final class MVClient: NSObject {
             }
             
             /* GUARD: Did we get a successful 2XX response? */
-            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
-                if let response = response as? NSHTTPURLResponse {
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
+                if let response = response as? HTTPURLResponse {
                     print("Your request returned an invalid response! Status code: \(response.statusCode)!")
                 } else if let response = response {
                     print("Your request returned an invalid response! Response: \(response)!")
@@ -82,8 +82,8 @@ final class MVClient: NSObject {
             }
             
             /* 5/6. Parse the data and use the data (happens in completion handler) */
-            completionHandler(imageData: data, error: nil)
-        }
+            completionHandler(data, nil)
+        }) 
         
         /* 7. Start the request */
         task.resume()
@@ -93,30 +93,30 @@ final class MVClient: NSObject {
 
     
     // MARK: GET
-    func taskForGETMethod(method: String, parameters: [String : AnyObject], completionHandler: Result<AnyObject, Error> -> Void) -> NSURLSessionDataTask {
+    func taskForGETMethod(_ method: String, parameters: [String : AnyObject], completionHandler: @escaping (Result<AnyObject, Error>) -> Void) -> URLSessionDataTask {
         
         /* 1. Set the parameters */
         var mutableParameters = parameters
-        mutableParameters[ParameterKeys.ApiKey] = Constants.ApiKey
+        mutableParameters[ParameterKeys.ApiKey] = Constants.ApiKey as AnyObject?
         
         /* 2/3. Build the URL and configure the request */
         let urlString = Constants.BaseURLSecure + method + MVClient.escapedParameters(mutableParameters)
-        let url = NSURL(string: urlString)!
-        let request = NSURLRequest(URL: url)
+        let url = URL(string: urlString)!
+        let request = URLRequest(url: url)
         
         /* 4. Make the request */
-        let task = session.dataTaskWithRequest(request) { (data, response, error) in
+        let task = session.dataTask(with: request, completionHandler: { (data, response, error) in
             
             /* GUARD: Was there an error? */
             guard (error == nil) else {
                 print("There was an error with your request: \(error)")
-                completionHandler(.Failure(.Network(error!.localizedDescription)))
+                completionHandler(.failure(E: .network(error!.localizedDescription)))
                 return
             }
             
             /* GUARD: Did we get a successful 2XX response? */
-            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
-                if let response = response as? NSHTTPURLResponse {
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
+                if let response = response as? HTTPURLResponse {
                     print("Your request returned an invalid response! Status code: \(response.statusCode)!")
                 } else if let response = response {
                     print("Your request returned an invalid response! Response: \(response)!")
@@ -129,13 +129,13 @@ final class MVClient: NSObject {
             /* GUARD: Was there any data returned? */
             guard let data = data else {
                 print("No data was returned by the request!")
-                completionHandler(.Failure(.Parser(.BadData)))
+                completionHandler(.failure(E: .parser(.BadData)))
                 return
             }
             
             /* 5/6. Parse the data and use the data (happens in completion handler) */
             MVClient.parseJSONWithCompletionHandler(data, completionHandler: completionHandler)
-        }
+        }) 
         
         /* 7. Start the request */
         task.resume()
@@ -146,36 +146,36 @@ final class MVClient: NSObject {
     // MARK: POST
 //    completionHandler: Result<AnyObject, Error> -> Void
     
-    func taskForPOSTMethod(method: String, parameters: [String : AnyObject], jsonBody: [String:AnyObject], completionHandler: Result<AnyObject, Error> -> Void) -> NSURLSessionDataTask {
+    func taskForPOSTMethod(_ method: String, parameters: [String : AnyObject], jsonBody: [String:AnyObject], completionHandler: @escaping (Result<AnyObject, Error>) -> Void) -> URLSessionDataTask {
         
         /* 1. Set the parameters */
         var mutableParameters = parameters
-        mutableParameters[ParameterKeys.ApiKey] = Constants.ApiKey
+        mutableParameters[ParameterKeys.ApiKey] = Constants.ApiKey as AnyObject?
         
         /* 2/3. Build the URL and configure the request */
         let urlString = Constants.BaseURLSecure + method + MVClient.escapedParameters(mutableParameters)
-        let url = NSURL(string: urlString)!
-        let request = NSMutableURLRequest(URL: url)
-        request.HTTPMethod = "POST"
+        let url = URL(string: urlString)!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         do {
-            request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(jsonBody, options: .PrettyPrinted)
+            request.httpBody = try! JSONSerialization.data(withJSONObject: jsonBody, options: .prettyPrinted)
         }
         
         /* 4. Make the request */
-        let task = session.dataTaskWithRequest(request) { (data, response, error) in
+        let task = session.dataTask(with: request, completionHandler: { (data, response, error) in
             
             /* GUARD: Was there an error? */
             guard (error == nil) else {
-                completionHandler(.Failure(.Network(error!.localizedDescription)))
+                completionHandler(.failure(E: .network(error!.localizedDescription)))
                 print("There was an error with your request: \(error)")
                 return
             }
             
             /* GUARD: Did we get a successful 2XX response? */
-            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
-                if let response = response as? NSHTTPURLResponse {
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
+                if let response = response as? HTTPURLResponse {
                     print("Your request returned an invalid response! Status code: \(response.statusCode)!")
                 } else if let response = response {
                     print("Your request returned an invalid response! Response: \(response)!")
@@ -193,7 +193,7 @@ final class MVClient: NSObject {
             
             /* 5/6. Parse the data and use the data (happens in completion handler) */
             MVClient.parseJSONWithCompletionHandler(data, completionHandler: completionHandler)
-        }
+        }) 
         
         /* 7. Start the request */
         task.resume()
@@ -209,29 +209,29 @@ final class MVClient: NSObject {
 
 extension MVClient {
     /* Helper: Substitute the key for the value that is contained within the method name */
-    class func substituteKeyInMethod(method: String, key: String, value: String) -> String? {
-        if method.rangeOfString("{\(key)}") != nil {
-            return method.stringByReplacingOccurrencesOfString("{\(key)}", withString: value)
+    class func substituteKeyInMethod(_ method: String, key: String, value: String) -> String? {
+        if method.range(of: "{\(key)}") != nil {
+            return method.replacingOccurrences(of: "{\(key)}", with: value)
         } else {
             return nil
         }
     }
     
     /* Helper: Given raw JSON, return a usable Foundation object */
-    class func parseJSONWithCompletionHandler(data: NSData, completionHandler: Result<AnyObject, Error> -> Void) {
+    class func parseJSONWithCompletionHandler(_ data: Data, completionHandler: (Result<AnyObject, Error>) -> Void) {
         
-        var parsedResult: AnyObject!
+        var parsedResult: Any!
         do {
-            parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+            parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
         } catch {
-             completionHandler(.Failure(.Parser(.BadData)))
+             completionHandler(.failure(E: .parser(.BadData)))
         }
         
-        completionHandler(.Success(parsedResult))
+        completionHandler(.success(T: parsedResult as AnyObject))
     }
     
     /* Helper function: Given a dictionary of parameters, convert to a string for a url */
-    class func escapedParameters(parameters: [String : AnyObject]) -> String {
+    class func escapedParameters(_ parameters: [String : AnyObject]) -> String {
         
         var urlVars = [String]()
         
@@ -241,14 +241,14 @@ extension MVClient {
             let stringValue = "\(value)"
             
             /* Escape it */
-            let escapedValue = stringValue.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())
+            let escapedValue = stringValue.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
             
             /* Append it */
             urlVars += [key + "=" + "\(escapedValue!)"]
             
         }
         
-        return (!urlVars.isEmpty ? "?" : "") + urlVars.joinWithSeparator("&")
+        return (!urlVars.isEmpty ? "?" : "") + urlVars.joined(separator: "&")
     }
     
     // MARK: - Shared Image Cache

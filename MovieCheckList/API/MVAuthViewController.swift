@@ -13,9 +13,9 @@ class MVAuthViewController: UIViewController {
     // MARK: Properties
     @IBOutlet weak var webView: UIWebView!
     
-    var urlRequest: NSURLRequest? = nil
+    var urlRequest: URLRequest? = nil
     var requestToken: String? = nil
-    var completionHandler : ((success: Bool, errorString: String?) -> Void)? = nil
+    var completionHandler : ((_ success: Bool, _ errorString: String?) -> Void)? = nil
     
     // MARK: Life Cycle
     
@@ -25,10 +25,10 @@ class MVAuthViewController: UIViewController {
         webView.delegate = self
         
         navigationItem.title = "TheMovieDB Auth"
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .Plain, target: self, action: #selector(MVAuthViewController.cancelAuth))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(MVAuthViewController.cancelAuth))
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
         
@@ -40,7 +40,7 @@ class MVAuthViewController: UIViewController {
     // MARK: Cancel Auth Flow
     
     func cancelAuth() {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
 }
 
@@ -48,11 +48,11 @@ class MVAuthViewController: UIViewController {
 
 extension MVAuthViewController: UIWebViewDelegate {
     
-    func webViewDidFinishLoad(webView: UIWebView) {
-        print("webView URL: ", webView.request?.URL?.absoluteString)
-        if ( webView.request!.URL!.absoluteString == "\(MVClient.Constants.AuthorizationURL)\(requestToken!)/allow") {
-            self.dismissViewControllerAnimated(true, completion: { () -> Void in
-                self.completionHandler!(success: true, errorString: nil)
+    func webViewDidFinishLoad(_ webView: UIWebView) {
+        print("webView URL: ", webView.request?.url?.absoluteString ?? "")
+        if ( webView.request!.url!.absoluteString == "\(MVClient.Constants.AuthorizationURL)\(requestToken!)/allow") {
+            self.dismiss(animated: true, completion: { () -> Void in
+                self.completionHandler!(true, nil)
             })
         }
     }

@@ -8,9 +8,9 @@
 
 import Foundation
 
-enum Error: ErrorType {
-    case Network(String)
-    case Parser(ParserData)
+enum AppError: Error {
+    case network(String)
+    case parser(ParserData)
 }
 
 enum ParserData: String {

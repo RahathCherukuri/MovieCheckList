@@ -9,7 +9,7 @@
 import UIKit
 
 protocol MoviePickerViewControllerDelegate {
-    func moviePicker(moviePicker: MoviePickerViewController, didPickMovie movie: Movie?)
+    func moviePicker(_ moviePicker: MoviePickerViewController, didPickMovie movie: Movie?)
 }
 
 class MoviePickerViewController: UIViewController {
@@ -27,7 +27,7 @@ class MoviePickerViewController: UIViewController {
     
     // The most recent data download task. We keep a reference to it so that it can
     // be canceled every time the search text changes
-    var searchTask: NSURLSessionDataTask?
+    var searchTask: URLSessionDataTask?
     
     // MARK: Lifecycle
     
@@ -44,22 +44,22 @@ class MoviePickerViewController: UIViewController {
     
 //     MARK: Dismissals
     
-    func handleSingleTap(recognizer: UITapGestureRecognizer) {
+    func handleSingleTap(_ recognizer: UITapGestureRecognizer) {
         view.endEditing(true)
     }
 
     
-    @IBAction func cancel(sender: UIBarButtonItem) {
+    @IBAction func cancel(_ sender: UIBarButtonItem) {
         delegate?.moviePicker(self, didPickMovie: nil)
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
 }
 
 // MARK: - MoviePickerViewController: UIGestureRecognizerDelegate
 
 extension MoviePickerViewController: UIGestureRecognizerDelegate {
-    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldReceiveTouch touch: UITouch) -> Bool {
-        return movieSearchBar.isFirstResponder()
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        return movieSearchBar.isFirstResponder
     }
 }
 
@@ -68,9 +68,9 @@ extension MoviePickerViewController: UIGestureRecognizerDelegate {
 extension MoviePickerViewController: UISearchBarDelegate {
     
     /* Each time the search text changes we want to cancel any current download and start a new one */
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         
-        spinner.hidden = false
+        spinner.isHidden = false
         spinner.startAnimating()
         /* Cancel the last task */
         if let task = searchTask {
@@ -92,11 +92,11 @@ extension MoviePickerViewController: UISearchBarDelegate {
             if let movies = movies {
                 self.movies = movies
                 self.stopAndHideSpinner()
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     self.movieTableView!.reloadData()
                 }
             } else if let err = error {
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     self.stopAndHideSpinner()
                     if (err != "cancelled") {
                         self.showAlertView(err)
@@ -108,13 +108,13 @@ extension MoviePickerViewController: UISearchBarDelegate {
         })
     }
     
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
     }
     
     func stopAndHideSpinner() {
         spinner.stopAnimating()
-        spinner.hidden = true
+        spinner.isHidden = true
     }
 }
 
@@ -122,26 +122,26 @@ extension MoviePickerViewController: UISearchBarDelegate {
 
 extension MoviePickerViewController: UITableViewDelegate, UITableViewDataSource {
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let CellReuseId = "MovieSearchCell"
         let movie = movies[indexPath.row]
-        let cell = tableView.dequeueReusableCellWithIdentifier(CellReuseId) as UITableViewCell!
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellReuseId) as UITableViewCell!
         
         if let releaseYear = movie.releaseYear {
-            cell.textLabel!.text = "\(movie.title) (\(releaseYear))"
+            cell?.textLabel!.text = "\(movie.title) (\(releaseYear))"
         } else {
-            cell.textLabel!.text = "\(movie.title)"
+            cell?.textLabel!.text = "\(movie.title)"
         }
         
-        return cell
+        return cell!
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return movies.count
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let movie = movies[indexPath.row]
         var movieAlreadySaved: Bool = false
@@ -173,18 +173,18 @@ extension MoviePickerViewController: UITableViewDelegate, UITableViewDataSource 
         if (!movieAlreadySaved) {
             MVClient.sharedInstance.postToWatchlist(movie, watchlist: true) { status_code, error in
                 if let err = error {
-                    dispatch_async(dispatch_get_main_queue()) {
+                    DispatchQueue.main.async {
                         self.showAlertView(err)
                     }
                     print(err)
                 } else {
                     if status_code == 1 || status_code == 12 {
-                        dispatch_async(dispatch_get_main_queue()) {
+                        DispatchQueue.main.async {
                             self.delegate?.moviePicker(self, didPickMovie: movie)
-                            self.dismissViewControllerAnimated(true, completion: nil)
+                            self.dismiss(animated: true, completion: nil)
                         }
                     } else {
-                        dispatch_async(dispatch_get_main_queue()) {
+                        DispatchQueue.main.async {
                             self.showAlertView("Sorry, couldn't add the movie. Try again later!")
                         }
                         print("Unexpected status code \(status_code)")
