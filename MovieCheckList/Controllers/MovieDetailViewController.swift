@@ -63,7 +63,7 @@ class MovieDetailViewController: UIViewController {
                 posterImage.image = UIImage(named: "Film")
             } else {
                 if let posterPath = movie.posterPath {
-                    MVClient.sharedInstance.taskForGETImage(posterSizes[5], filePath: posterPath, completionHandler: { (imageData, error) in
+                    _ = MVClient.sharedInstance.taskForGETImage(posterSizes[5], filePath: posterPath, completionHandler: { (imageData, error) in
                         if let image = UIImage(data: imageData!) {
                             movie.detailImage = image
                             DispatchQueue.main.async {
@@ -71,7 +71,7 @@ class MovieDetailViewController: UIViewController {
                                 self.stopAndHideSpinner()
                             }
                         } else {
-                            print(error)
+                            print(error ?? "")
                             DispatchQueue.main.async {
                                 self.showAlertView((error?.description)!)
                                 self.stopAndHideSpinner()

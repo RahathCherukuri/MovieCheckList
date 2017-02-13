@@ -26,7 +26,7 @@ final class MVClient: NSObject {
     }()
     
     lazy var scratchContext: NSManagedObjectContext = {
-        var context = NSManagedObjectContext()
+        var context = NSManagedObjectContext.init(concurrencyType: .mainQueueConcurrencyType)
         context.persistentStoreCoordinator =  CoreDataStackManager.sharedInstance().persistentStoreCoordinator
         return context
     }()

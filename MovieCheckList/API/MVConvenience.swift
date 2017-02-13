@@ -56,7 +56,7 @@ extension MVClient {
         let method = Methods.AuthenticationTokenNew
         let parameters: [String : AnyObject] = [ : ]
         
-        taskForGETMethod(method, parameters: parameters) { dataResult in
+        _ = taskForGETMethod(method, parameters: parameters) { dataResult in
             switch dataResult {
             case .success(let result):
                 guard let dic: [String: AnyObject] = result as? [String: AnyObject],
@@ -95,7 +95,7 @@ extension MVClient {
         let method: String = Methods.AuthenticationSessionNew
         let parameters: [String : AnyObject] = [ParameterKeys.RequestToken: requestToken as AnyObject]
         
-        taskForGETMethod(method, parameters: parameters) { dataResult in
+        _ = taskForGETMethod(method, parameters: parameters) { dataResult in
             switch dataResult {
             case .success(let result):
                 guard let dic: [String: AnyObject] = result as? [String: AnyObject],
@@ -116,7 +116,7 @@ extension MVClient {
         let method: String = Methods.Account
         let parameters: [String: AnyObject] = [ParameterKeys.SessionID:session_id as AnyObject]
         
-        taskForGETMethod(method, parameters: parameters) { dataResult in
+        _ = taskForGETMethod(method, parameters: parameters) { dataResult in
             switch dataResult {
             case .success(let result):
                 guard let dic: [String: AnyObject] = result as? [String: AnyObject],
@@ -140,7 +140,7 @@ extension MVClient {
         var mutableMethod : String = Methods.AccountIDWatchlistMovies
         mutableMethod = MVClient.substituteKeyInMethod(mutableMethod, key: MVClient.URLKeys.UserID, value: String(MVClient.sharedInstance.userID!))!
         
-        taskForGETMethod(mutableMethod, parameters: parameters as [String : AnyObject]) {dataResult in
+        _ = taskForGETMethod(mutableMethod, parameters: parameters as [String : AnyObject]) {dataResult in
             switch dataResult {
             case .success(let result):
                 guard let dic: [String: AnyObject] = result as? [String: AnyObject],
@@ -192,7 +192,7 @@ extension MVClient {
         mutableMethod = MVClient.substituteKeyInMethod(mutableMethod, key: MVClient.URLKeys.UserID, value: String(MVClient.sharedInstance.userID!))!
         
         /* 2. Make the request */
-        taskForGETMethod(mutableMethod, parameters: parameters as [String : AnyObject]) { dataresult in
+        _ = taskForGETMethod(mutableMethod, parameters: parameters as [String : AnyObject]) { dataresult in
             switch dataresult {
             case .success(let result):
                 guard let dic: [String: AnyObject] = result as? [String: AnyObject],
@@ -288,7 +288,7 @@ extension MVClient {
         var mutableMethod : String = Methods.MovieInfo
         let movieIDString: String = "\(movieId)"
         mutableMethod = MVClient.substituteKeyInMethod(mutableMethod, key: MVClient.URLKeys.UserID, value: movieIDString)!
-        taskForGETMethod(mutableMethod, parameters: parameters) { dataResult in
+        _ = taskForGETMethod(mutableMethod, parameters: parameters) { dataResult in
             switch dataResult {
             case .success(let mov):
                 guard let movieDictionary: [String: AnyObject] = mov as? [String: AnyObject]
@@ -317,7 +317,7 @@ extension MVClient {
         ]
         
         /* 2. Make the request */
-        taskForPOSTMethod(mutableMethod, parameters: parameters as [String : AnyObject], jsonBody: jsonBody) { dataResult in
+        _ = taskForPOSTMethod(mutableMethod, parameters: parameters as [String : AnyObject], jsonBody: jsonBody) { dataResult in
             switch dataResult {
             case .success(let res):
                 guard let result = res[MVClient.JSONResponseKeys.StatusCode] as? Int
@@ -352,7 +352,7 @@ extension MVClient {
         ]
         
         /* 2. Make the request */
-        taskForPOSTMethod(mutableMethod, parameters: parameters as [String : AnyObject], jsonBody: jsonBody) { dataResult in
+        _ = taskForPOSTMethod(mutableMethod, parameters: parameters as [String : AnyObject], jsonBody: jsonBody) { dataResult in
             switch dataResult {
             case .success(let res):
                 guard let result = res[MVClient.JSONResponseKeys.StatusCode] as? Int

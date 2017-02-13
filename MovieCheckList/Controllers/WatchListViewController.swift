@@ -248,7 +248,7 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
             stopAndHideSpinner(cell!)
         } else {
             if let posterPath = movie.posterPath {
-                MVClient.sharedInstance.taskForGETImage(posterSizes[2], filePath: posterPath, completionHandler: { (imageData, error) in
+                _ = MVClient.sharedInstance.taskForGETImage(posterSizes[2], filePath: posterPath, completionHandler: { (imageData, error) in
                     if let image = UIImage(data: imageData!) {
                         movie.image = image
                         DispatchQueue.main.async {
@@ -260,7 +260,7 @@ extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
                             self.stopAndHideSpinner(cell!)
                             self.showAlertView((error?.description)!)
                         }
-                        print(error)
+                        print(error ?? "")
                     }
                 })
             }

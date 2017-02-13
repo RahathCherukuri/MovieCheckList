@@ -49,7 +49,7 @@ class MVAuthViewController: UIViewController {
 extension MVAuthViewController: UIWebViewDelegate {
     
     func webViewDidFinishLoad(_ webView: UIWebView) {
-        print("webView URL: ", webView.request?.url?.absoluteString)
+        print("webView URL: ", webView.request?.url?.absoluteString ?? "")
         if ( webView.request!.url!.absoluteString == "\(MVClient.Constants.AuthorizationURL)\(requestToken!)/allow") {
             self.dismiss(animated: true, completion: { () -> Void in
                 self.completionHandler!(true, nil)
